@@ -58,6 +58,7 @@ impl Preprocessor for Handler {
 
         let current_mdbook_version = parse_mdbook_version(&ctx.mdbook_version);
         check_version(&current_mdbook_version);
-        todo!()
+
+        Ok(super::book_handler::handle(book))
     }
 }

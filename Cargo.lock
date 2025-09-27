@@ -509,6 +509,7 @@ dependencies = [
  "env_logger",
  "log",
  "mdbook",
+ "serde_json",
 ]
 
 [[package]]

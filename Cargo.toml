@@ -5,11 +5,12 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
+# core
+mdbook = {version = "0.4", default-features = false}
+serde_json = "1.0"
+
 # command
 clap = "4.5"
-
-# mdbook
-mdbook = {version = "0.4", default-features = false}
 
 # logger
 log = "0.4"

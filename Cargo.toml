@@ -2,5 +2,15 @@
 name = "mdbook-betterlink"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
 
 [dependencies]
+# command
+clap = "4.5"
+
+# mdbook
+mdbook = {version = "0.4", default-features = false}
+
+# logger
+log = "0.4"
+env_logger = "0.11"

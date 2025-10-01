@@ -5,6 +5,9 @@ authors = ["TickPoints <tickpoints@outlook.com>"]
 description = "Plugin that provides better hyperlink effects for mdbook."
 edition = "2024"
 license = "MIT"
+repository = "https://github.com/TickPoints/mdbook-betterlink"
+keywords = ["mdbook", "markdown", "documentation"]
+categories = ["command-line-utilities", "development-tools"]
 
 [dependencies]
 # core

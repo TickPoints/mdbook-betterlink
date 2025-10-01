@@ -22,6 +22,8 @@
 ```shell
 cargo install mdbook-betterlink
 ```
+**注**: 或使用[`binstall`](https://github.com/cargo-bins/cargo-binstall)或从发行版下载。
+
 2. 使用: 在`book.toml`添加:
 ```shell
 [preprocessor.betterlink]

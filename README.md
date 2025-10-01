@@ -22,6 +22,8 @@ BetterLink is a plugin that functions as a preprocessor. You can use BetterLink 
 ```shell
 cargo install mdbook-betterlink
 ```
+**Tip**: Or use [`binstall`](https://github.com/cargo-bins/cargo-binstall) or download from the releases.
+
 2. Usage: Add the following to `book.toml`:
 ```toml
 [preprocessor.betterlink]

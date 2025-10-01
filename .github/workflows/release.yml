@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "*"
+      - "v*"
 
 jobs:
   build-release:
@@ -14,63 +14,58 @@ jobs:
           - target: aarch64-apple-darwin
             os: macos-latest
             artifact_prefix: ""
-
           - target: aarch64-unknown-linux-musl
             os: ubuntu-latest
             artifact_prefix: ""
-
           - target: x86_64-apple-darwin
             os: macos-latest
             artifact_prefix: ""
-
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             artifact_prefix: ""
-
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             artifact_prefix: ""
-
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
             artifact_prefix: ""
-    
+
     runs-on: ${{ matrix.os }}
     env:
       TAG: ${{ github.ref_name }}
       CARGO_INCREMENTAL: 0
       CARGO_TERM_COLOR: always
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-
+      
       - name: Add musl targets
         run: rustup target add ${{ matrix.target }}
         if: ${{ contains(matrix.target, 'musl') }}
-
+      
       - name: Build binary (release mode)
         run: cargo build --release --target ${{ matrix.target }}
-
+      
       - name: Prepare artifacts
         run: |
           BIN_NAME="mdbook-betterlink${{ matrix.target == 'x86_64-pc-windows-msvc' && '.exe' || '' }}"
           BUILD_PATH="./target/${{ matrix.target }}/release/$BIN_NAME"
           ZIP_NAME="mdbook-betterlink-${{ env.TAG }}-${{ matrix.target }}.zip"
           TAR_NAME="mdbook-betterlink-${{ env.TAG }}-${{ matrix.target }}.tar.gz"
-          
+
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             7z a "$ZIP_NAME" "$BUILD_PATH"
           else
             zip "$ZIP_NAME" "$BUILD_PATH"
             tar zcvf "$TAR_NAME" "$BUILD_PATH"
           fi
-
+      
       - name: Generate checksums
         shell: bash
         run: |
@@ -78,7 +73,7 @@ jobs:
           for f in **/*.{zip,tar.gz}; do
             sha256sum "$f" >> checksums.txt
           done
-
+      
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -90,17 +85,19 @@ jobs:
   create-release:
     needs: build-release
     runs-on: ubuntu-latest
+    
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
           pattern: '*_assets'
-
+          merge-multiple: true
+      
       - name: Compile all checksums
         run: |
           find artifacts -name checksums.txt -exec cat {} \; > ALL_CHECKSUMS.txt
-
+      
       - name: Generate release notes
         id: release-notes
         run: |
@@ -110,7 +107,6 @@ jobs:
 - x86_64-pc-windows-msvc
 - x86_64-unknown-linux-gnu
 - x86_64-unknown-linux-musl"
-
           CHECKSUMS=$(cat ALL_CHECKSUMS.txt | sed -e 's/artifacts\/\w*_assets\///')
           echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
           echo "See the [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/main/CHANGELOG.md) for the full update log." >> $GITHUB_ENV
@@ -121,7 +117,7 @@ jobs:
           echo "$CHECKSUMS" >> $GITHUB_ENV
           echo "\`\`\`" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
+      
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -133,3 +129,4 @@ jobs:
             artifacts/**/*.zip
             artifacts/**/*.tar.gz
             ALL_CHECKSUMS.txt
+ 

@@ -41,6 +41,8 @@ fn add_a_tag(context: &mut String) {
         let title_content = rest_of_line.trim();
 
         // Check if it contains Chinese characters
+        // For convenience, all header are now added
+        /*
         if !title_content
             .chars()
             .any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c))
@@ -49,6 +51,7 @@ fn add_a_tag(context: &mut String) {
             new_content.push('\n');
             continue;
         }
+        */
 
         // Generate Unique ID
         let id = if title_content.is_empty() {
@@ -64,7 +67,7 @@ fn add_a_tag(context: &mut String) {
 
         id_counter += 1;
 
-        // Reconstruct row content
+        // Reconstruct row line
         let new_line = format!(
             "{} <a id=\"{}\"></a>{}",
             &line[..header_level],

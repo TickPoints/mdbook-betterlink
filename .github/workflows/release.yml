@@ -18,7 +18,7 @@ jobs:
         with:
           changelog: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: ${{ contains(github.ref, '-pre') }}
+          draft: ${{ contains(github.ref, '-pre') }}
 
   build-and-upload:
     needs: create-release
@@ -39,30 +39,11 @@ jobs:
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-      
-      - name: Install musl-tools (for musl targets)
-        if: contains(matrix.target, 'musl')
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
-      
-      - name: Build release binary
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --target ${{ matrix.target }}
-      
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: mdbook-betterlink
           target: ${{ matrix.target }}
           archive: mdbook-betterlink-${{ github.ref_name }}-${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          tar: ${{ !contains(matrix.target, 'windows') }}
-          zip: ${{ contains(matrix.target, 'windows') }}
+          tar: unix
+          zip: windows

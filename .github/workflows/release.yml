@@ -1,125 +1,114 @@
 name: Release
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
-      - "v*"
+      - v[0-9]+.*
+      - v[0-9]+.*-pre
 
 jobs:
-  build-release:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/create-gh-release-action@v1
+        with:
+          changelog: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ contains(github.ref, '-pre') }}
+
+  build-and-upload:
+    needs: create-release
     strategy:
-      fail-fast: false
       matrix:
         include:
           - target: aarch64-apple-darwin
             os: macos-latest
-            artifact_prefix: ""
           - target: aarch64-unknown-linux-musl
             os: ubuntu-latest
-            artifact_prefix: ""
           - target: x86_64-apple-darwin
             os: macos-latest
-            artifact_prefix: ""
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            artifact_prefix: ""
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact_prefix: ""
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
-            artifact_prefix: ""
-
     runs-on: ${{ matrix.os }}
-    env:
-      TAG: ${{ github.ref_name }}
-      CARGO_INCREMENTAL: 0
-      CARGO_TERM_COLOR: always
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        
+      - name: Install musl tools (for musl targets)
+        if: contains(matrix.target, 'musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools musl-dev
       
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-      
-      - name: Add musl targets
+      - name: Add Rust target
         run: rustup target add ${{ matrix.target }}
-        if: ${{ contains(matrix.target, 'musl') }}
       
-      - name: Build binary (release mode)
+      - name: Build release binary
         run: cargo build --release --target ${{ matrix.target }}
       
-      - name: Prepare artifacts
-        run: |
-          BIN_NAME="mdbook-betterlink${{ matrix.target == 'x86_64-pc-windows-msvc' && '.exe' || '' }}"
-          BUILD_PATH="./target/${{ matrix.target }}/release/$BIN_NAME"
-          ZIP_NAME="mdbook-betterlink-${{ env.TAG }}-${{ matrix.target }}.zip"
-          TAR_NAME="mdbook-betterlink-${{ env.TAG }}-${{ matrix.target }}.tar.gz"
-
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            7z a "$ZIP_NAME" "$BUILD_PATH"
-          else
-            zip "$ZIP_NAME" "$BUILD_PATH"
-            tar zcvf "$TAR_NAME" "$BUILD_PATH"
-          fi
-      
-      - name: Generate checksums
+      - name: Prepare assets
         shell: bash
         run: |
-          shopt -s globstar
-          for f in **/*.{zip,tar.gz}; do
-            sha256sum "$f" >> checksums.txt
-          done
+          TAG=${GITHUB_REF#refs/tags/}
+          BIN_NAME="mdbook-betterlink"
+          TARGET=${{ matrix.target }}
+          
+          if [[ "$TARGET" == *"windows"* ]]; then
+            EXT="zip"
+            cp target/$TARGET/release/$BIN_NAME.exe $BIN_NAME.exe
+            sha256sum $BIN_NAME.exe > $BIN_NAME.exe.sha256
+            zip $BIN_NAME-$TAG-$TARGET.zip $BIN_NAME.exe $BIN_NAME.exe.sha256
+            ASSET_PATH=$BIN_NAME-$TAG-$TARGET.zip
+          else
+            EXT="tar.gz"
+            cp target/$TARGET/release/$BIN_NAME $BIN_NAME
+            sha256sum $BIN_NAME > $BIN_NAME.sha256
+            tar czf $BIN_NAME-$TAG-$TARGET.tar.gz $BIN_NAME $BIN_NAME.sha256
+            ASSET_PATH=$BIN_NAME-$TAG-$TARGET.tar.gz
+          fi
+          
+          echo "ASSET_PATH=$ASSET_PATH" >> $GITHUB_ENV
+          echo "CHECKSUM=$(sha256sum $ASSET_PATH | awk '{print $1}')" >> $GITHUB_ENV
       
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ matrix.target }}_assets
-          path: |
-            **/*${{ matrix.target }}.{zip,tar.gz}
-            checksums.txt
-
-  create-release:
-    needs: build-release
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          pattern: '*_assets'
-          merge-multiple: true
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ${{ env.ASSET_PATH }}
+          asset_name: ${{ env.ASSET_PATH }}
+          asset_content_type: application/octet-stream
       
-      - name: Compile all checksums
+      - name: Generate checksum info
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
-          find artifacts -name checksums.txt -exec cat {} \; > ALL_CHECKSUMS.txt
+          echo "### CheckCode" >> checksum.md
+          echo "\`\`\`" >> checksum.md
+          echo "File: ${{ env.ASSET_PATH }}" >> checksum.md
+          echo "SHA256: ${{ env.CHECKSUM }}" >> checksum.md
+          echo "\`\`\`" >> checksum.md
       
-      - name: Generate release notes
-        id: release-notes
-        run: >
-          TARGET_LIST="- aarch64-apple-darwin\n- aarch64-unknown-linux-musl\n- x86_64-apple-darwin\n- x86_64-pc-windows-msvc\n- x86_64-unknown-linux-gnu x86_64-unknown-linux-musl"
-          CHECKSUMS=$(cat ALL_CHECKSUMS.txt | sed -e 's/artifacts\/\w*_assets\///')
-          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
-          echo "See the [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/main/CHANGELOG.md) for the full update log." >> $GITHUB_ENV
-          echo "### Support" >> $GITHUB_ENV
-          echo "$TARGET_LIST" >> $GITHUB_ENV
-          echo "### CheckCode" >> $GITHUB_ENV
-          echo "\`\`\`" >> $GITHUB_ENV
-          echo "$CHECKSUMS" >> $GITHUB_ENV
-          echo "\`\`\`" >> $GITHUB_ENV
-      
-      - name: Create release
-        uses: softprops/action-gh-release@v1
+      - name: Update release notes with checksums
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        uses: actions/github-script@v6
+        env:
+          RELEASE_ID: ${{ needs.create-release.outputs.id }}
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: ${{ env.RELEASE_BODY }}
-          prerelease: ${{ contains(github.ref_name, '-pre') }}
-          files: |
-            artifacts/**/*.zip
-            artifacts/**/*.tar.gz
-            ALL_CHECKSUMS.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const checksumInfo = fs.readFileSync('checksum.md', 'utf8');
+            const releaseNotes = `See the [CHANGELOG.md](https://github.com/TickPoints/mdbook-betterlink/blob/main/CHANGELOG.md) for the full update log.\n\n${checksumInfo}`;
+            
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.RELEASE_ID,
+              body: releaseNotes
+            });

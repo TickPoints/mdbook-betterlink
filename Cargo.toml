@@ -1,6 +1,8 @@
 [package]
 name = "mdbook-betterlink"
 version = "0.1.0"
+authors = ["TickPoints <tickpoints@outlook.com>"]
+description = "Plugin that provides better hyperlink effects for mdbook."
 edition = "2024"
 license = "MIT"
 

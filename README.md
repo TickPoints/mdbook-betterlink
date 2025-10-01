@@ -6,7 +6,7 @@
 [![Issues](https://img.shields.io/github/issues/TickPoints/mdbook-betterlink?style=flat)](https://github.com/TickPoints/mdbook-betterlink/issues)
 
 **English**
-[**中文**](README_zh.md)
+[**中文**](https://github.com/TickPoints/mdbook-betterlink/blob/main/README_zh.md)
 
 BetterLink is designed to provide better hyperlink effects for MDBOOK.
 
@@ -17,3 +17,13 @@ It addresses some pain points I perceive regarding hyperlinks in MDBook:
 
 ## How
 BetterLink is a plugin that functions as a preprocessor. You can use BetterLink just like any other plugin.
+
+1. Install [**`mdbook-betterlink`**](https://crates.io/crates/mdbook-betterlink):
+```shell
+cargo install mdbook-betterlink
+```
+2. Usage: Add the following to `book.toml`:
+```toml
+[preprocessor.betterlink]
+# Enable betterlink
+```

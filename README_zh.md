@@ -5,7 +5,7 @@
 [![Stars](https://img.shields.io/github/stars/TickPoints/mdbook-betterlink?style=flat)](https://github.com/TickPoints/mdbook-betterlink)
 [![Issues](https://img.shields.io/github/issues/TickPoints/mdbook-betterlink?style=flat)](https://github.com/TickPoints/mdbook-betterlink/issues)
 
-[**English**](README.md)
+[**English**](https://github.com/TickPoints/mdbook-betterlink/blob/main/README.md)
 **中文**
 
 **BetterLink** 用来为 [MDBOOK](https://github.com/rust-lang/mdBook) 提供更好的超链接效果。
@@ -17,3 +17,13 @@
 
 ## How
 **BetterLink** 是一个用作 [预处理器](https://rust-lang.github.io/mdBook/format/configuration/preprocessors.html) 的插件。您可以向使用别的插件一样使用 **BetterLink**。
+
+1. 安装[**`mdbook-betterlink`**](https://crates.io/crates/mdbook-betterlink)
+```shell
+cargo install mdbook-betterlink
+```
+2. 使用: 在`book.toml`添加:
+```shell
+[preprocessor.betterlink]
+# 使用betterlink
+```

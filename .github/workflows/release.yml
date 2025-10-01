@@ -102,13 +102,13 @@ jobs:
         id: release-notes
         run: |
           TARGET_LIST=$(cat <<EOF
-- aarch64-apple-darwin
-- aarch64-unknown-linux-musl
-- x86_64-apple-darwin
-- x86_64-pc-windows-msvc
-- x86_64-unknown-linux-gnu
-- x86_64-unknown-linux-musl
-EOF
+        - aarch64-apple-darwin
+        - aarch64-unknown-linux-musl
+        - x86_64-apple-darwin
+        - x86_64-pc-windows-msvc
+        - x86_64-unknown-linux-gnu
+        - x86_64-unknown-linux-musl
+        EOF
           )
           CHECKSUMS=$(cat ALL_CHECKSUMS.txt | sed -e 's/artifacts\/\w*_assets\///')
           echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV

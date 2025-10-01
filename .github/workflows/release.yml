@@ -1,0 +1,135 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            artifact_prefix: ""
+
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact_prefix: ""
+
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact_prefix: ""
+
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact_prefix: ""
+
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact_prefix: ""
+
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact_prefix: ""
+    
+    runs-on: ${{ matrix.os }}
+    env:
+      TAG: ${{ github.ref_name }}
+      CARGO_INCREMENTAL: 0
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Add musl targets
+        run: rustup target add ${{ matrix.target }}
+        if: ${{ contains(matrix.target, 'musl') }}
+
+      - name: Build binary (release mode)
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Prepare artifacts
+        run: |
+          BIN_NAME="mdbook-betterlink${{ matrix.target == 'x86_64-pc-windows-msvc' && '.exe' || '' }}"
+          BUILD_PATH="./target/${{ matrix.target }}/release/$BIN_NAME"
+          ZIP_NAME="mdbook-betterlink-${{ env.TAG }}-${{ matrix.target }}.zip"
+          TAR_NAME="mdbook-betterlink-${{ env.TAG }}-${{ matrix.target }}.tar.gz"
+          
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            7z a "$ZIP_NAME" "$BUILD_PATH"
+          else
+            zip "$ZIP_NAME" "$BUILD_PATH"
+            tar zcvf "$TAR_NAME" "$BUILD_PATH"
+          fi
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          shopt -s globstar
+          for f in **/*.{zip,tar.gz}; do
+            sha256sum "$f" >> checksums.txt
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}_assets
+          path: |
+            **/*${{ matrix.target }}.{zip,tar.gz}
+            checksums.txt
+
+  create-release:
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: '*_assets'
+
+      - name: Compile all checksums
+        run: |
+          find artifacts -name checksums.txt -exec cat {} \; > ALL_CHECKSUMS.txt
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          TARGET_LIST="- aarch64-apple-darwin
+- aarch64-unknown-linux-musl
+- x86_64-apple-darwin
+- x86_64-pc-windows-msvc
+- x86_64-unknown-linux-gnu
+- x86_64-unknown-linux-musl"
+
+          CHECKSUMS=$(cat ALL_CHECKSUMS.txt | sed -e 's/artifacts\/\w*_assets\///')
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "See the [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/main/CHANGELOG.md) for the full update log." >> $GITHUB_ENV
+          echo "### Support" >> $GITHUB_ENV
+          echo "$TARGET_LIST" >> $GITHUB_ENV
+          echo "### CheckCode" >> $GITHUB_ENV
+          echo "\`\`\`" >> $GITHUB_ENV
+          echo "$CHECKSUMS" >> $GITHUB_ENV
+          echo "\`\`\`" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: ${{ env.RELEASE_BODY }}
+          prerelease: ${{ contains(github.ref_name, '-pre') }}
+          files: |
+            artifacts/**/*.zip
+            artifacts/**/*.tar.gz
+            ALL_CHECKSUMS.txt

@@ -34,14 +34,11 @@ fn parse_mdbook_version(version: &str) -> attributes::VersionTuple {
 fn check_version(current_mdbook_version: &attributes::VersionTuple) {
     use std::cmp::Ordering;
     match attributes::DEPENDENT_VERSION.cmp(current_mdbook_version) {
-        Ordering::Less => warn!(
-            "The current version is {}, but the system was builded by {}. The dependent version is old.",
-            attributes::DEPENDENT_VERSION,
-            current_mdbook_version
-        ),
         Ordering::Equal => info!("The current version is the stable dependent version."),
-        Ordering::Greater => warn!(
-            "The current version is {}, but the system was builded by {}. The dependent version is early.",
+        _ => warn!(
+            "Warning: The {} plugin was built against version {} of mdbook, \
+             but we're being called from version {}",
+            "betterlink",
             attributes::DEPENDENT_VERSION,
             current_mdbook_version
         ),

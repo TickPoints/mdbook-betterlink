@@ -40,75 +40,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-        
-      - name: Install musl tools (for musl targets)
-        if: contains(matrix.target, 'musl')
-        run: sudo apt-get update && sudo apt-get install -y musl-tools musl-dev
       
-      - name: Add Rust target
-        run: rustup target add ${{ matrix.target }}
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      
+      - name: Install musl-tools (for musl targets)
+        if: contains(matrix.target, 'musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
       
       - name: Build release binary
-        run: cargo build --release --target ${{ matrix.target }}
-      
-      - name: Prepare assets
-        shell: bash
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          BIN_NAME="mdbook-betterlink"
-          TARGET=${{ matrix.target }}
-          
-          if [[ "$TARGET" == *"windows"* ]]; then
-            EXT="zip"
-            cp target/$TARGET/release/$BIN_NAME.exe $BIN_NAME.exe
-            sha256sum $BIN_NAME.exe > $BIN_NAME.exe.sha256
-            zip $BIN_NAME-$TAG-$TARGET.zip $BIN_NAME.exe $BIN_NAME.exe.sha256
-            ASSET_PATH=$BIN_NAME-$TAG-$TARGET.zip
-          else
-            EXT="tar.gz"
-            cp target/$TARGET/release/$BIN_NAME $BIN_NAME
-            sha256sum $BIN_NAME > $BIN_NAME.sha256
-            tar czf $BIN_NAME-$TAG-$TARGET.tar.gz $BIN_NAME $BIN_NAME.sha256
-            ASSET_PATH=$BIN_NAME-$TAG-$TARGET.tar.gz
-          fi
-          
-          echo "ASSET_PATH=$ASSET_PATH" >> $GITHUB_ENV
-          echo "CHECKSUM=$(sha256sum $ASSET_PATH | awk '{print $1}')" >> $GITHUB_ENV
-      
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions-rs/cargo@v1
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ${{ env.ASSET_PATH }}
-          asset_name: ${{ env.ASSET_PATH }}
-          asset_content_type: application/octet-stream
+          command: build
+          args: --release --target ${{ matrix.target }}
       
-      - name: Generate checksum info
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
-        run: |
-          echo "### CheckCode" >> checksum.md
-          echo "\`\`\`" >> checksum.md
-          echo "File: ${{ env.ASSET_PATH }}" >> checksum.md
-          echo "SHA256: ${{ env.CHECKSUM }}" >> checksum.md
-          echo "\`\`\`" >> checksum.md
-      
-      - name: Update release notes with checksums
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
-        uses: actions/github-script@v6
-        env:
-          RELEASE_ID: ${{ needs.create-release.outputs.id }}
+      - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const checksumInfo = fs.readFileSync('checksum.md', 'utf8');
-            const releaseNotes = `See the [CHANGELOG.md](https://github.com/TickPoints/mdbook-betterlink/blob/main/CHANGELOG.md) for the full update log.\n\n${checksumInfo}`;
-            
-            await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: process.env.RELEASE_ID,
-              body: releaseNotes
-            });
+          bin: mdbook-betterlink
+          target: ${{ matrix.target }}
+          archive: mdbook-betterlink-${{ github.ref_name }}-${{ matrix.target }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tar: ${{ !contains(matrix.target, 'windows') }}
+          zip: ${{ contains(matrix.target, 'windows') }}

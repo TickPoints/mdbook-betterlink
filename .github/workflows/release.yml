@@ -100,16 +100,8 @@ jobs:
       
       - name: Generate release notes
         id: release-notes
-        run: |
-          TARGET_LIST=$(cat <<EOF
-        - aarch64-apple-darwin
-        - aarch64-unknown-linux-musl
-        - x86_64-apple-darwin
-        - x86_64-pc-windows-msvc
-        - x86_64-unknown-linux-gnu
-        - x86_64-unknown-linux-musl
-        EOF
-          )
+        run: >
+          TARGET_LIST="- aarch64-apple-darwin\n- aarch64-unknown-linux-musl\n- x86_64-apple-darwin\n- x86_64-pc-windows-msvc\n- x86_64-unknown-linux-gnu x86_64-unknown-linux-musl"
           CHECKSUMS=$(cat ALL_CHECKSUMS.txt | sed -e 's/artifacts\/\w*_assets\///')
           echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
           echo "See the [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/main/CHANGELOG.md) for the full update log." >> $GITHUB_ENV
@@ -119,7 +111,6 @@ jobs:
           echo "\`\`\`" >> $GITHUB_ENV
           echo "$CHECKSUMS" >> $GITHUB_ENV
           echo "\`\`\`" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
       
       - name: Create release
         uses: softprops/action-gh-release@v1

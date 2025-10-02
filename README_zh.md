@@ -35,3 +35,6 @@ cargo install mdbook-betterlink
 ## 不推荐: 因为为所有标题添加`<a>`完全不破坏原始逻辑，而且令像带`-`等特殊符号的英文标题也可以正常使用
 add_link_for_chinese = false
 ```
+
+## Changelog
+在这里查看[更改日志](https://github.com/TickPoints/mdbook-betterlink/blob/main/CHANGELOG.md)。

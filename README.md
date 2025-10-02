@@ -36,3 +36,6 @@ cargo install mdbook-betterlink
 ## and allows English headings with special characters like `-` to work normally
 add_link_for_chinese = false
 ```
+
+## Changelog
+View the [change log](https://github.com/TickPoints/mdbook-betterlink/blob/main/CHANGELOG.md) here.

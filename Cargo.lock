@@ -510,6 +510,7 @@ dependencies = [
  "log",
  "mdbook",
  "serde_json",
+ "toml",
 ]
 
 [[package]]

@@ -1,5 +1,6 @@
 use log::{debug, info, warn};
 use mdbook::book::Book;
+use mdbook::config::Config;
 use mdbook::preprocess::{Preprocessor, PreprocessorContext};
 
 use crate::attributes;
@@ -45,6 +46,15 @@ fn check_version(current_mdbook_version: &attributes::VersionTuple) {
     }
 }
 
+use super::config::{ProcessorConfig, parse_config};
+fn get_processor_config(config: &Config) -> ProcessorConfig {
+    parse_config(
+        config
+            .get("preprocessor.betterlink")
+            .and_then(|v| v.as_table()),
+    )
+}
+
 impl Preprocessor for Handler {
     fn name(&self) -> &str {
         "betterlink"
@@ -56,6 +66,8 @@ impl Preprocessor for Handler {
         let current_mdbook_version = parse_mdbook_version(&ctx.mdbook_version);
         check_version(&current_mdbook_version);
 
-        Ok(super::book_handler::handle(book))
+        let configs = get_processor_config(&ctx.config);
+
+        Ok(super::book_handler::handle(book, configs))
     }
 }

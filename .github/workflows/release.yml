@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: mdbook-betterlink
+          bin: ..
           target: ${{ matrix.target }}
           archive: mdbook-betterlink-${{ github.ref_name }}-${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}

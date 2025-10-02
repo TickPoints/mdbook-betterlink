@@ -1,4 +1,5 @@
 mod book_handler;
+mod config;
 mod processor;
 
 use mdbook::preprocess::Preprocessor;

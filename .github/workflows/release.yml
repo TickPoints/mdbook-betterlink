@@ -18,7 +18,7 @@ jobs:
         with:
           changelog: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          draft: ${{ contains(github.ref, '-pre') }}
+          prerelease: ${{ contains(github.ref, '-pre') }}
 
   build-and-upload:
     needs: create-release
@@ -39,9 +39,10 @@ jobs:
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v4
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: ..
+          bin: mdbook-betterlink
           target: ${{ matrix.target }}
           archive: mdbook-betterlink-${{ github.ref_name }}-${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}

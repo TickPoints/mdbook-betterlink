@@ -28,4 +28,11 @@ cargo install mdbook-betterlink
 ```toml
 [preprocessor.betterlink]
 # Enable betterlink
+# We also have the following optional configurations available:
+
+## Set to true to add `<a>` tags only for Chinese headings
+## Default is false
+## Not recommended: Because adding `<a>` tags to all headings doesn't break the original logic at all, 
+## and allows English headings with special characters like `-` to work normally
+add_link_for_chinese = false
 ```

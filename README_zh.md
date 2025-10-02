@@ -12,7 +12,7 @@
 
 ## Why
 解决本人认为的**MDBook**超链接方面的一些痛点:
-- [x] 为其它语言(主要为中文)的标题也添加`<a>`标签(为了方便，目前无条件为所有标题添加)
+- [x] 为其它语言(主要为中文)的标题也添加`<a>`标签
 - [ ] 检查无效链接
 
 ## How
@@ -28,4 +28,10 @@ cargo install mdbook-betterlink
 ```shell
 [preprocessor.betterlink]
 # 使用betterlink
+# 我们还有下面这些可供选择的配置:
+
+## 设为true以仅为中文标题添加`<a>`标签
+## 默认为false
+## 不推荐: 因为为所有标题添加`<a>`完全不破坏原始逻辑，而且令像带`-`等特殊符号的英文标题也可以正常使用
+add_link_for_chinese = false
 ```

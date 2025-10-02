@@ -1,3 +1,8 @@
+## 0.1.5-pre
+- Fixed `.github/workflows/release.yml`
+- Added the config system
+- Added the `add_link_for_chinese`.config
+
 ## 0.1.4-pre
 - Fixed `.github/workflows/release.yml`
 - Added profile options

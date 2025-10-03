@@ -32,8 +32,13 @@ cargo install mdbook-betterlink
 
 ## 设为true以仅为中文标题添加`<a>`标签
 ## 默认为false
-## 不推荐: 因为为所有标题添加`<a>`完全不破坏原始逻辑，而且令像带`-`等特殊符号的英文标题也可以正常使用
+## **不推荐**: 因为为所有标题添加`<a>`完全不破坏原始逻辑，而且令像带`-`等特殊符号的英文标题也可以正常使用
 add_link_for_chinese = false
+
+## 设为true以显示处理过后的内容(在每一篇文章处理完后输出一次)
+## 默认为true
+## **特殊**: 只有在Debug模式下编译的文件才有用
+display_processed_contexts = true
 ```
 
 ## Changelog

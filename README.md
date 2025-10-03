@@ -32,9 +32,14 @@ cargo install mdbook-betterlink
 
 ## Set to true to add `<a>` tags only for Chinese headings
 ## Default is false
-## Not recommended: Because adding `<a>` tags to all headings doesn't break the original logic at all, 
+## **Not recommended**: Because adding `<a>` tags to all headings doesn't break the original logic at all, 
 ## and allows English headings with special characters like `-` to work normally
 add_link_for_chinese = false
+
+## Set to true to display the processed contexts (output once after each article is processed)
+## Default is true
+## **Special**: Only files compiled in Debug mode are useful
+display_processed_contexts = true
 ```
 
 ## Changelog

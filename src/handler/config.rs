@@ -13,6 +13,9 @@ pub struct ProcessorConfig {
     /// avoid adding unnecessary links to English.
     /// Default: false
     pub add_link_for_chinese: bool,
+    /// Debug-compiled programs display the processed contexts during use.
+    /// Default: true
+    pub display_processed_contexts: bool,
 }
 
 impl ProcessorConfig {
@@ -22,15 +25,19 @@ impl ProcessorConfig {
                 .get("add_link_for_chinese")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(false),
+            display_processed_contexts: raw_table
+                .get("display_processed_contexts")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true),
         }
     }
 }
 
-#[allow(clippy::derivable_impls)]
 impl Default for ProcessorConfig {
     fn default() -> Self {
         Self {
             add_link_for_chinese: false,
+            display_processed_contexts: true,
         }
     }
 }

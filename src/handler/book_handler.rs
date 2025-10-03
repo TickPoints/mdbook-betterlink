@@ -82,7 +82,9 @@ fn add_a_tag(context: &mut String, check_language: bool) {
 
 fn content_handle(context: &mut String, config: &ProcessorConfig) {
     add_a_tag(context, config.add_link_for_chinese);
-    log::debug!("new context: {context}");
+    if config.display_processed_contexts {
+        log::debug!("new context: {context}");
+    }
 }
 
 fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig) {

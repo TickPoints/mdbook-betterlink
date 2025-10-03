@@ -13,6 +13,9 @@ impl Handler {
     }
 }
 
+// This looks kind of stupid.
+// But what the hell.
+// I will adjust it in the next version.
 fn parse_mdbook_version(version: &str) -> attributes::VersionTuple {
     let mut version_strings = [const { String::new() }; 3];
     let mut version_list = [0usize; 3];
@@ -21,14 +24,15 @@ fn parse_mdbook_version(version: &str) -> attributes::VersionTuple {
     for c in version.chars() {
         match c {
             'v' | ' ' | '\n' => continue,
-            ',' => {
+            '.' | ',' => {
                 version_list[target] = version_strings[target].parse().unwrap_or(0);
                 target += 1;
             }
             _ => version_strings[target].push(c),
         }
     }
-
+    version_list[target] = version_strings[target].parse().unwrap_or(0);
+    
     version_list.into()
 }
 

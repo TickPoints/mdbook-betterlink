@@ -12,7 +12,7 @@ BetterLink is designed to provide better hyperlink effects for MDBOOK.
 
 ## Why
 It addresses some pain points I perceive regarding hyperlinks in MDBook:
-- [x] Adds `<a>` tags to headings in other languages (for convenience, currently adds them unconditionally to all headings)
+- [x] Adds `<a>` tags to headings in other languages
 - [ ] Checks for invalid links
 
 ## How

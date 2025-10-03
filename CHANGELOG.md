@@ -3,6 +3,9 @@
 2. A preview with a pre suffix.
 3. A major release(`X.X.0`) will inform of major updates to the previous release.
 
+## 0.2.2
+- Optimized version parsing
+
 ## 0.2.1
 - Added the `display_processed_contexts` config
 - Fixed the version parsing error simply

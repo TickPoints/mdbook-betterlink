@@ -16,7 +16,7 @@ impl From<[usize; 3]> for VersionTuple {
 use std::fmt;
 impl fmt::Display for VersionTuple {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}, {}, {}", self.0, self.1, self.2)
+        write!(f, "({}, {}, {})", self.0, self.1, self.2)
     }
 }
 

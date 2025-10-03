@@ -13,27 +13,18 @@ impl Handler {
     }
 }
 
-// This looks kind of stupid.
-// But what the hell.
-// I will adjust it in the next version.
 fn parse_mdbook_version(version: &str) -> attributes::VersionTuple {
-    let mut version_strings = [const { String::new() }; 3];
-    let mut version_list = [0usize; 3];
-
-    let mut target = 0;
-    for c in version.chars() {
-        match c {
-            'v' | ' ' | '\n' => continue,
-            '.' | ',' => {
-                version_list[target] = version_strings[target].parse().unwrap_or(0);
-                target += 1;
-            }
-            _ => version_strings[target].push(c),
-        }
-    }
-    version_list[target] = version_strings[target].parse().unwrap_or(0);
-    
-    version_list.into()
+    version
+        .chars()
+        .filter(|&c| c.is_ascii_digit() || matches!(c, '.' | ','))
+        .collect::<String>()
+        .split(&['.', ','][..])
+        .filter_map(|s| s.parse::<usize>().ok())
+        .take(3)
+        .collect::<Vec<_>>()
+        .try_into()
+        .map(|arr: [usize; 3]| arr.into())
+        .unwrap_or_else(|_| [0, 0, 0].into())
 }
 
 fn check_version(current_mdbook_version: &attributes::VersionTuple) {

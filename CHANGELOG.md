@@ -3,6 +3,10 @@
 2. A preview with a pre suffix.
 3. A major release(`X.X.0`) will inform of major updates to the previous release.
 
+## 0.2.3-pre
+- Updated compile profile.
+- Added a debug log to alert user debugging_assertions
+
 ## 0.2.2
 - Optimized version parsing
 

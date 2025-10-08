@@ -9,6 +9,7 @@ fn init_logger() {
 
     if cfg!(debug_assertions) {
         logger_builder.filter_level(log::LevelFilter::Debug);
+        log::error!("Already in debug mode.");
     } else {
         logger_builder.filter_level(log::LevelFilter::Info);
     }

@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn check_link(context: &str, path: &Option<PathBuf>, root: &PathBuf) {
     let mut in_code_block = false;
@@ -68,7 +68,7 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &PathBuf) {
     }
 }
 
-pub fn check_path(url: &str, path: &PathBuf, root: &PathBuf) -> bool {
+pub fn check_path(url: &str, path: &Path, root: &PathBuf) -> bool {
     if check_url(url) {
         return true;
     }
@@ -79,7 +79,8 @@ pub fn check_path(url: &str, path: &PathBuf, root: &PathBuf) -> bool {
     if !realpath.starts_with(root) {
         return false;
     }
-    return true;
+
+    true
 }
 
 pub fn check_url(url: &str) -> bool {

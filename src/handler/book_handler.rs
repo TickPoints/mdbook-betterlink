@@ -92,11 +92,10 @@ fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, ctx: &Preproc
 }
 
 pub fn handle(mut book: Book, config: ProcessorConfig, ctx: &PreprocessorContext) -> Book {
-    // for the future
-    #[allow(clippy::single_match)]
-    book.for_each_mut(|book_item| match book_item {
-        BookItem::Chapter(chapter) => chapter_handle(chapter, &config, ctx),
-        _ => (),
+    book.for_each_mut(|book_item| {
+        if let BookItem::Chapter(chapter) = book_item {
+            chapter_handle(chapter, &config, ctx)
+        }
     });
     book
 }

@@ -29,3 +29,6 @@ toml = "0.5"
 [profile.release]
 lto = true
 strip = "symbols"
+panic = "abort"
+incremental = false
+codegen-units = 10

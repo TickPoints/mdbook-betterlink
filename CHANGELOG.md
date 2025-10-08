@@ -3,6 +3,11 @@
 2. A preview with a pre suffix.
 3. A major release(`X.X.0`) will inform of major updates to the previous release.
 
+## 0.3.0-pre
+- Added the `do_link_check` config
+- Added the `link_checker` mod to complete the link check
+- Added the `url` crate to check url
+
 ## 0.2.3-pre
 - Updated compile profile.
 - Added a debug log to alert user debugging_assertions

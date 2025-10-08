@@ -25,6 +25,9 @@ serde_json = "1.0"
 ## Matches the current older version of the mdbook.
 ## When mdbook is stable at 0.5, it is promoted.
 toml = "0.5"
+## Used to parse the URL.
+## This feature may become optional in the future.
+url = "2.5"
 
 [profile.release]
 lto = true

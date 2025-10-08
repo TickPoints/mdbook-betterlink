@@ -1,5 +1,6 @@
 use super::config::ProcessorConfig;
 use mdbook::book::{Book, BookItem, Chapter};
+use mdbook::preprocess::PreprocessorContext;
 
 fn add_a_tag(context: &mut String, check_language: bool) {
     let mut in_code_block = false;
@@ -80,22 +81,21 @@ fn add_a_tag(context: &mut String, check_language: bool) {
     *context = new_content;
 }
 
-fn content_handle(context: &mut String, config: &ProcessorConfig) {
-    add_a_tag(context, config.add_link_for_chinese);
+fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, ctx: &PreprocessorContext) {
+    add_a_tag(&mut chapter.content, config.add_link_for_chinese);
     if config.display_processed_contexts {
-        log::debug!("new context: {context}");
+        log::debug!("new context: {0}", chapter.content);
+    }
+    if config.do_link_check {
+        crate::link_checker::check_link(&chapter.content, &chapter.source_path, &ctx.root);
     }
 }
 
-fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig) {
-    content_handle(&mut chapter.content, config);
-}
-
-pub fn handle(mut book: Book, config: ProcessorConfig) -> Book {
+pub fn handle(mut book: Book, config: ProcessorConfig, ctx: &PreprocessorContext) -> Book {
     // for the future
     #[allow(clippy::single_match)]
     book.for_each_mut(|book_item| match book_item {
-        BookItem::Chapter(chapter) => chapter_handle(chapter, &config),
+        BookItem::Chapter(chapter) => chapter_handle(chapter, &config, ctx),
         _ => (),
     });
     book

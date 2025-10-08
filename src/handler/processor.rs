@@ -63,6 +63,6 @@ impl Preprocessor for Handler {
 
         let configs = get_processor_config(&ctx.config);
 
-        Ok(super::book_handler::handle(book, configs))
+        Ok(super::book_handler::handle(book, configs, ctx))
     }
 }

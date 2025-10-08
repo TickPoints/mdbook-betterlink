@@ -1,6 +1,7 @@
 pub mod attributes;
 mod command;
 mod handler;
+pub mod link_checker;
 
 use std::process;
 

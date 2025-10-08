@@ -13,7 +13,7 @@ BetterLink is designed to provide better hyperlink effects for MDBOOK.
 ## Why
 It addresses some pain points I perceive regarding hyperlinks in MDBook:
 - [x] Adds `<a>` tags to headings in other languages
-- [ ] Checks for invalid links
+- [x] Checks for invalid links
 
 ## How
 BetterLink is a plugin that functions as a preprocessor. You can use BetterLink just like any other plugin.
@@ -40,6 +40,10 @@ add_link_for_chinese = false
 ## Default is true
 ## **Special**: Only files compiled in Debug mode are useful
 display_processed_contexts = true
+
+## Set to true to do link checking during preprocessing
+## Default is true
+do_link_check = true
 ```
 
 ## Changelog

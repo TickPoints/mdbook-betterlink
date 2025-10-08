@@ -13,7 +13,7 @@
 ## Why
 解决本人认为的**MDBook**超链接方面的一些痛点:
 - [x] 为其它语言(主要为中文)的标题也添加`<a>`标签
-- [ ] 检查无效链接
+- [x] 检查无效链接
 
 ## How
 **BetterLink** 是一个用作 [预处理器](https://rust-lang.github.io/mdBook/format/configuration/preprocessors.html) 的插件。您可以向使用别的插件一样使用 **BetterLink**。
@@ -39,6 +39,10 @@ add_link_for_chinese = false
 ## 默认为true
 ## **特殊**: 只有在Debug模式下编译的文件才有用
 display_processed_contexts = true
+
+## 设为true以在预处理时做链接检查
+## 默认为true
+do_link_check = true
 ```
 
 ## Changelog

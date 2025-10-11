@@ -14,6 +14,11 @@ fn init_logger() {
     } else {
         logger_builder.filter_level(log::LevelFilter::Info);
     }
+    
+    // Set format
+    logger
+        .format_file(false)
+        .format_timestamp_secs();
 
     logger_builder.init();
 

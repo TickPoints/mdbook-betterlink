@@ -12,6 +12,11 @@ BetterLink is designed to provide better hyperlink effects for MDBOOK.
 
 ## Why
 It addresses some pain points I perceive regarding hyperlinks in MDBook:
+> [!CAUTION]
+> Please do not use the `do_link_check` function for the time being because it has the following problems:
+> - [ ] Line number error
+> - [ ] Inability to properly handle special cases (note, etc.)
+
 - [x] Adds `<a>` tags to headings in other languages
 - [x] Checks for invalid links
 

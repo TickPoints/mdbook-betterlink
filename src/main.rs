@@ -16,7 +16,7 @@ fn init_logger() {
     }
     
     // Set format
-    logger
+    logger_builder
         .format_file(false)
         .format_timestamp_secs();
 

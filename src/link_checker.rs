@@ -26,12 +26,12 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &PathBuf) {
                 '[' if !in_link_text && !in_link_url && chars.peek() != Some(&'`') => {
                     in_link_text = true;
                     buffer.clear();
-                }
+                },
                 ']' if in_link_text => {
                     in_link_text = false;
                     link_text = buffer.clone();
                     buffer.clear();
-                }
+                },
                 '(' if !in_link_text
                     && !in_link_url
                     && !link_text.is_empty()
@@ -39,7 +39,7 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &PathBuf) {
                 {
                     in_link_url = true;
                     buffer.clear();
-                }
+                },
                 ')' if in_link_url => {
                     in_link_url = false;
                     link_url = buffer.clone();
@@ -49,7 +49,7 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &PathBuf) {
                         let status = check_path(&link_url, path.as_ref().unwrap(), root);
                         if !status {
                             log::error!(
-                                "[{0}][{line_index}] {link_url} isn't a valid URL (or path)",
+                                "[{0}][{line_index}] [{link_text}]({link_url}) isn't a valid URL (or path)",
                                 path.as_ref().unwrap().display()
                             );
                         }
@@ -58,10 +58,10 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &PathBuf) {
                     link_text.clear();
                     link_url.clear();
                     buffer.clear();
-                }
+                },
                 _ if in_link_text || in_link_url => {
                     buffer.push(c);
-                }
+                },
                 _ => {}
             }
         }

@@ -1,6 +1,10 @@
+/// About some constants and type definitions related to constants.
 pub mod attributes;
+/// About the command definition.
 mod command;
+/// About preprocessor control.
 mod handler;
+/// About controls on type checking.
 pub mod link_checker;
 
 use std::process;

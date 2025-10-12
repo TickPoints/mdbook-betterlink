@@ -1,88 +1,112 @@
 use std::path::{Path, PathBuf};
+use pulldown_cmark::{Event, LinkType, Tag, TagEnd, CowStr};
 
-pub fn check_link(context: &str, path: &Option<PathBuf>, root: &PathBuf) {
-    let mut in_code_block = false;
+fn format_range(range: &std::ops::Range<usize>) -> String {
+    if range.is_empty() {
+        range.start.to_string()
+    } else {
+        format!("{}..{}", range.start, range.end)
+    }
+}
 
-    for (line_index, line) in context.lines().enumerate() {
-        if line.starts_with("```") || line.starts_with("~~~") {
-            in_code_block = !in_code_block;
-            continue;
-        }
+/// Checks markdown content for invalid links.
+///
+/// # Arguments
+/// * `context` - The markdown content to check
+/// * `path` - Optional path to the markdown file (used for relative path resolution)
+/// * `root` - Root directory that all links must be contained within
+pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path) {
+    // Early return if path is None to avoid unnecessary processing
+    let Some(file_path) = path else {
+        return;
+    };
 
-        if in_code_block {
-            continue;
-        }
+    let events = pulldown_cmark::Parser::new_ext(context, pulldown_cmark::Options::all());
+    let mut link_state = LinkState::new();
 
-        // Detecting Markdown links within a row
-        let mut chars = line.chars().peekable();
-        let mut buffer = String::new();
-        let mut in_link_text = false;
-        let mut in_link_url = false;
-        let mut link_text = String::new();
-        let mut link_url: String;
-
-        while let Some(c) = chars.next() {
-            match c {
-                '[' if !in_link_text && !in_link_url && chars.peek() != Some(&'`') => {
-                    in_link_text = true;
-                    buffer.clear();
-                },
-                ']' if in_link_text => {
-                    in_link_text = false;
-                    link_text = buffer.clone();
-                    buffer.clear();
-                },
-                '(' if !in_link_text
-                    && !in_link_url
-                    && !link_text.is_empty()
-                    && chars.peek() != Some(&'`') =>
-                {
-                    in_link_url = true;
-                    buffer.clear();
-                },
-                ')' if in_link_url => {
-                    in_link_url = false;
-                    link_url = buffer.clone();
-
-                    // Main process
-                    if !link_text.is_empty() && !link_url.is_empty() && path.is_some() {
-                        let status = check_path(&link_url, path.as_ref().unwrap(), root);
-                        if !status {
-                            log::error!(
-                                "[{0}][{line_index}] [{link_text}]({link_url}) isn't a valid URL (or path)",
-                                path.as_ref().unwrap().display()
-                            );
-                        }
-                    }
-
-                    link_text.clear();
-                    link_url.clear();
-                    buffer.clear();
-                },
-                _ if in_link_text || in_link_url => {
-                    buffer.push(c);
-                },
-                _ => {}
+    for (event, range) in events.into_offset_iter() {
+        match event {
+            Event::Start(Tag::Link { link_type, dest_url, .. }) => {
+                link_state.start_link(dest_url, link_type);
             }
+            Event::Text(text) if link_state.is_active() => {
+                link_state.append_text(&text);
+            }
+            Event::End(TagEnd::Link) if link_state.should_check() => {
+                if !check_path(&link_state.url, file_path, root) {
+                    log::error!(
+                        "[{}][{}] [{}]({}) isn't a valid URL (or path)",
+                        file_path.display(),
+                        format_range(&range),
+                        link_state.text,
+                        link_state.url
+                    );
+                }
+                link_state.reset();
+            }
+            _ => {}
         }
     }
 }
 
-pub fn check_path(url: &str, path: &Path, root: &PathBuf) -> bool {
-    if check_url(url) {
-        return true;
-    }
-    let realpath = path.join(url);
-    if !realpath.is_file() {
-        return false;
-    }
-    if !realpath.starts_with(root) {
-        return false;
-    }
-
-    true
+/// Tracks the state of a link being processed
+struct LinkState<'a> {
+    active: bool,
+    text: String,
+    url: CowStr<'a>,
+    link_type: LinkType,
 }
 
+impl<'a> LinkState<'a> {
+    fn new() -> Self {
+        Self {
+            active: false,
+            text: String::new(),
+            url: CowStr::Borrowed(""),
+            link_type: LinkType::Inline,
+        }
+    }
+
+    fn start_link(&mut self, url: CowStr<'a>, link_type: LinkType) {
+        self.active = true;
+        self.url = url;
+        self.link_type = link_type;
+    }
+
+    fn append_text(&mut self, text: &str) {
+        self.text.push_str(text);
+    }
+
+    fn is_active(&self) -> bool {
+        self.active
+    }
+
+    fn should_check(&self) -> bool {
+        self.active && matches!(self.link_type, LinkType::Inline)
+    }
+
+    fn reset(&mut self) {
+        self.active = false;
+        self.text.clear();
+        self.url = CowStr::Borrowed("");
+    }
+}
+
+/// Checks if a URL/path is valid.
+///
+/// Returns true if:
+/// - The URL is a valid absolute URL, or
+/// - The path exists as a file within the root directory
+pub fn check_path(url: &str, path: &Path, root: &Path) -> bool {
+    check_url(url) || is_valid_relative_path(url, path, root)
+}
+
+/// Checks if a string is a valid URL
 pub fn check_url(url: &str) -> bool {
     url::Url::parse(url).is_ok()
+}
+
+fn is_valid_relative_path(url: &str, path: &Path, root: &Path) -> bool {
+    let full_path = path.join(url);
+    full_path.is_file() && full_path.starts_with(root)
 }

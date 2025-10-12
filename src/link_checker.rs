@@ -1,5 +1,5 @@
+use pulldown_cmark::{CowStr, Event, LinkType, Tag, TagEnd};
 use std::path::{Path, PathBuf};
-use pulldown_cmark::{Event, LinkType, Tag, TagEnd, CowStr};
 
 fn format_range(range: &std::ops::Range<usize>) -> String {
     if range.is_empty() {
@@ -26,7 +26,11 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path) {
 
     for (event, range) in events.into_offset_iter() {
         match event {
-            Event::Start(Tag::Link { link_type, dest_url, .. }) => {
+            Event::Start(Tag::Link {
+                link_type,
+                dest_url,
+                ..
+            }) => {
                 link_state.start_link(dest_url, link_type);
             }
             Event::Text(text) if link_state.is_active() => {

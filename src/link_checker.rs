@@ -14,7 +14,7 @@ fn format_range(range: &std::ops::Range<usize>) -> String {
 /// # Arguments
 /// * `context` - The markdown content to check
 /// * `path` - Optional path to the markdown file (used for relative path resolution)
-/// * `root` - Root directory that all links must be contained within
+/// * `root` - Root directory that all links must be contained within (It's the `src/` of the current book)
 pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path) {
     // Early return if path is None to avoid unnecessary processing
     let Some(file_path) = path else {
@@ -148,9 +148,8 @@ pub fn is_valid_link_target(target: &str, base_path: &Path, root: &Path) -> Opti
     let full_path = if let Some(relative_path) = path_part.strip_prefix('/') {
         root.join(relative_path)
     } else {
-        let base_dir = base_path.parent()?;
+        let base_dir = root.join(base_path.parent()?);
         let joined_path = base_dir.join(path_part);
-        log::debug!("base_dir: {base_dir:?}\njoined_path: {joined_path:?}");
         joined_path.canonicalize().ok()?
     };
 

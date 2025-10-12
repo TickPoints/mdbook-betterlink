@@ -81,21 +81,22 @@ fn add_a_tag(context: &mut String, check_language: bool) {
     *context = new_content;
 }
 
-fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, ctx: &PreprocessorContext) {
+fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, src: &std::path::Path) {
     add_a_tag(&mut chapter.content, config.add_link_for_chinese);
     if config.display_processed_contexts {
         log::debug!("new context: {0}", chapter.content);
     }
     if config.do_link_check {
-        crate::link_checker::check_link(&chapter.content, &chapter.source_path, &ctx.root);
+        crate::link_checker::check_link(&chapter.content, &chapter.source_path, src);
     }
 }
 
 /// Preprocessed core handle.
 pub fn handle(mut book: Book, config: ProcessorConfig, ctx: &PreprocessorContext) -> Book {
+    let src = ctx.root.join(&ctx.config.book.src);
     book.for_each_mut(|book_item| {
         if let BookItem::Chapter(chapter) = book_item {
-            chapter_handle(chapter, &config, ctx)
+            chapter_handle(chapter, &config, &src)
         }
     });
     book

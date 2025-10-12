@@ -91,6 +91,7 @@ fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, ctx: &Preproc
     }
 }
 
+/// Preprocessed core handle.
 pub fn handle(mut book: Book, config: ProcessorConfig, ctx: &PreprocessorContext) -> Book {
     book.for_each_mut(|book_item| {
         if let BookItem::Chapter(chapter) = book_item {

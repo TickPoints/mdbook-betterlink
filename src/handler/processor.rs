@@ -7,6 +7,11 @@ use crate::attributes;
 
 pub struct Handler;
 
+/// Preprocessor, using Handler on name.
+///
+/// In essence, it has no additional function
+/// and only serves as the attachment of the **Preprocessor** trait.
+/// This design only seems to conform to the general specifications of mdbooks.
 impl Handler {
     pub fn new() -> Self {
         Self

@@ -1,5 +1,7 @@
 use toml::value::Table;
 
+/// Parsing config.
+/// The main parsing work will be divided between `default` and `parse`.
 pub fn parse_config(raw_table: Option<&Table>) -> ProcessorConfig {
     if raw_table.is_none() {
         return ProcessorConfig::default();
@@ -7,6 +9,9 @@ pub fn parse_config(raw_table: Option<&Table>) -> ProcessorConfig {
     ProcessorConfig::parse(raw_table.unwrap())
 }
 
+/// We're going to read `preprocessor.betterlink` fields in the book's config.
+/// (This behavior occurs before the `handle` function is officially processed.)
+/// Once obtained, the following more readable form can be obtained by parsing through the associated method.
 #[derive(Clone, Debug)]
 pub struct ProcessorConfig {
     /// Add link for Chinese only,

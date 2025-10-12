@@ -8,6 +8,7 @@ license = "MIT"
 repository = "https://github.com/TickPoints/mdbook-betterlink"
 keywords = ["mdbook", "markdown", "documentation"]
 categories = ["command-line-utilities", "development-tools"]
+readme = "README.md"
 
 [dependencies]
 # core
@@ -28,10 +29,14 @@ toml = "0.5"
 ## Used to parse the URL.
 ## This feature may become optional in the future.
 url = "2.5"
+## Used to parse markdown
+## Matches the current older version of the mdbook.
+## When mdbook is stable at 0.5, it is promoted.
+pulldown-cmark = "0.10"
 
 [profile.release]
 lto = true
 strip = "symbols"
 panic = "abort"
 incremental = false
-codegen-units = 10
+codegen-units = 1

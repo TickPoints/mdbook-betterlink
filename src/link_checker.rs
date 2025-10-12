@@ -102,7 +102,13 @@ impl<'a> LinkState<'a> {
 /// - The URL is a valid absolute URL, or
 /// - The path exists as a file within the root directory
 pub fn check_path(url: &str, path: &Path, root: &Path) -> bool {
-    check_url(url) || is_valid_link_target(url, path, root)
+    check_url(url)
+        || is_valid_link_target(url, path, root).unwrap_or_else(|| {
+            log::warn!(
+                "The path checker has an internal error that may cause the decision to fail."
+            );
+            false
+        })
 }
 
 /// Checks if a string is a valid URL
@@ -126,28 +132,28 @@ pub fn check_url(url: &str) -> bool {
 /// - Combined-type title (e.g. "./a.md#title")
 ///
 /// **The function behavior is still unstable.**
-pub fn is_valid_link_target(target: &str, base_path: &Path, root: &Path) -> bool {
+pub fn is_valid_link_target(target: &str, base_path: &Path, root: &Path) -> Option<bool> {
     if target.starts_with('#') {
-        return true;        // Fragments are always considered valid
+        return Some(true); // Fragments are always considered valid
     }
 
     // Split off fragment and query parts
     let path_part = match target.split(['#', '?']).next() {
-        Some("") => return true,        // Case where only fragment exists (e.g., "#title")
+        Some("") => return Some(true), // Case where only fragment exists (e.g., "#title")
         Some(part) => part,
-        None => return false,
+        None => return None,
     };
 
     // Handle the path portion
     let full_path = if let Some(relative_path) = path_part.strip_prefix('/') {
         root.join(relative_path)
     } else {
-        let base_dir = base_path.parent().unwrap_or(base_path);
+        let base_dir = base_path.parent()?;
         let joined_path = base_dir.join(path_part);
-        log::debug!("base_path: {base_path:?}\njoined_path: {joined_path:?}");
-        joined_path.canonicalize().unwrap_or(joined_path)
+        log::debug!("base_dir: {base_dir:?}\njoined_path: {joined_path:?}");
+        joined_path.canonicalize().ok()?
     };
 
     // Check if the path exists and is within the root directory
-    full_path.exists() && full_path.starts_with(root)
+    Some(full_path.exists() && full_path.starts_with(root))
 }

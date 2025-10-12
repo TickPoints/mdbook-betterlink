@@ -102,7 +102,7 @@ impl<'a> LinkState<'a> {
 /// - The URL is a valid absolute URL, or
 /// - The path exists as a file within the root directory
 pub fn check_path(url: &str, path: &Path, root: &Path) -> bool {
-    check_url(url) || is_valid_relative_path(url, path, root)
+    check_url(url) || is_valid_link_target(url, path, root)
 }
 
 /// Checks if a string is a valid URL
@@ -110,7 +110,44 @@ pub fn check_url(url: &str) -> bool {
     url::Url::parse(url).is_ok()
 }
 
-fn is_valid_relative_path(url: &str, path: &Path, root: &Path) -> bool {
-    let full_path = path.join(url);
-    full_path.is_file() && full_path.starts_with(root)
+/// Checks if a path is a valid relative path within the root directory.
+/// Supports:
+/// - Root-relative paths (e.g., "/a/b/c.md" where "/" maps to `root`)
+/// - Regular relative paths (e.g., "subdir/file.md")
+/// - Current directory relative paths (e.g., "./file.md")
+/// - Parent directory relative paths (e.g., "../sibling/file.md")
+///
+/// There are still some problems related to the title.
+/// For links that contain a title, the title portion is ignored now.
+/// We may improve later.
+///
+/// Title Supports:
+/// - Pure title (e.g. "#title")
+/// - Combined-type title (e.g. "./a.md#title")
+///
+/// **The function behavior is still unstable.**
+pub fn is_valid_link_target(target: &str, base_path: &Path, root: &Path) -> bool {
+    if target.starts_with('#') {
+        return true;        // Fragments are always considered valid
+    }
+
+    // Split off fragment and query parts
+    let path_part = match target.split(['#', '?']).next() {
+        Some("") => return true,        // Case where only fragment exists (e.g., "#title")
+        Some(part) => part,
+        None => return false,
+    };
+
+    // Handle the path portion
+    let full_path = if let Some(relative_path) = path_part.strip_prefix('/') {
+        root.join(relative_path)
+    } else {
+        let base_dir = base_path.parent().unwrap_or(base_path);
+        let joined_path = base_dir.join(path_part);
+        log::debug!("base_path: {base_path:?}\njoined_path: {joined_path:?}");
+        joined_path.canonicalize().unwrap_or(joined_path)
+    };
+
+    // Check if the path exists and is within the root directory
+    full_path.exists() && full_path.starts_with(root)
 }

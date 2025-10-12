@@ -1,5 +1,37 @@
+use std::fmt;
+
+/// A simple version tuple.
+/// Contains parsing and generation capabilities.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
 pub struct VersionTuple(usize, usize, usize);
+
+impl VersionTuple {
+    /// Generate a (0,0,0) version tuple.
+    pub fn empty() -> Self {
+        Self(0, 0, 0)
+    }
+
+    /// Parse version number text such as 0,0,1 or 0.0.1.
+    pub fn parse_version(version: &str) -> Self {
+        version
+            .chars()
+            .filter(|&c| c.is_ascii_digit() || matches!(c, '.' | ','))
+            .collect::<String>()
+            .split(&['.', ','][..])
+            .filter_map(|s| s.parse::<usize>().ok())
+            .take(3)
+            .collect::<Vec<_>>()
+            .try_into()
+            .map(|arr: [usize; 3]| arr.into())
+            .unwrap_or_else(|_| [0, 0, 0].into())
+    }
+
+    /// Display the version through a format to ({}, {}, {}).
+    /// The behavior is the same as what `fmt::Display` does.
+    pub fn display(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {}, {})", self.0, self.1, self.2)
+    }
+}
 
 impl From<VersionTuple> for (usize, usize, usize) {
     fn from(v: VersionTuple) -> Self {
@@ -13,11 +45,11 @@ impl From<[usize; 3]> for VersionTuple {
     }
 }
 
-use std::fmt;
 impl fmt::Display for VersionTuple {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "({}, {}, {})", self.0, self.1, self.2)
     }
 }
 
+/// Constant: The version of the mdbook on which the build (/development) depends.
 pub const DEPENDENT_VERSION: VersionTuple = VersionTuple(0, 4, 52);

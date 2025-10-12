@@ -13,20 +13,6 @@ impl Handler {
     }
 }
 
-fn parse_mdbook_version(version: &str) -> attributes::VersionTuple {
-    version
-        .chars()
-        .filter(|&c| c.is_ascii_digit() || matches!(c, '.' | ','))
-        .collect::<String>()
-        .split(&['.', ','][..])
-        .filter_map(|s| s.parse::<usize>().ok())
-        .take(3)
-        .collect::<Vec<_>>()
-        .try_into()
-        .map(|arr: [usize; 3]| arr.into())
-        .unwrap_or_else(|_| [0, 0, 0].into())
-}
-
 fn check_version(current_mdbook_version: &attributes::VersionTuple) {
     use std::cmp::Ordering;
     match attributes::DEPENDENT_VERSION.cmp(current_mdbook_version) {
@@ -58,7 +44,7 @@ impl Preprocessor for Handler {
     fn run(&self, ctx: &PreprocessorContext, book: Book) -> mdbook::errors::Result<Book> {
         debug!("Betterlink Preprocessor was started.");
 
-        let current_mdbook_version = parse_mdbook_version(&ctx.mdbook_version);
+        let current_mdbook_version = attributes::VersionTuple::parse_version(&ctx.mdbook_version);
         check_version(&current_mdbook_version);
 
         let configs = get_processor_config(&ctx.config);

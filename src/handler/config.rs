@@ -46,7 +46,7 @@ impl ProcessorConfig {
             ),
             do_link_check: get_bool_config(raw_table, "do_link_check", true),
             link_checker_config: raw_table
-                .get("link_checkef")
+                .get("link_checker")
                 .and_then(|v| v.as_table())
                 .map(LinkCheckerConfig::parse)
                 .unwrap_or_default(),

@@ -44,13 +44,7 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path, conf: &Lin
             }
             Event::End(TagEnd::Link) if link_state.should_check() => {
                 if !path_checker::check_path(&link_state.url, file_path, root) {
-                    log::error!(
-                        "[{}][{}] [{}]({}) isn't a valid URL (or path)",
-                        file_path.display(),
-                        format_range(&range),
-                        link_state.text,
-                        link_state.url
-                    );
+                    link_state.prompt(file_path, range, conf.prompt_level);
                 }
                 link_state.reset();
             }
@@ -99,5 +93,16 @@ impl<'a> LinkState<'a> {
         self.active = false;
         self.text.clear();
         self.url = CowStr::Borrowed("");
+    }
+
+    fn prompt(&self, file_path: &Path, range: std::ops::Range<usize>, prompt_level: log::Level) {
+        log::log!(
+            prompt_level,
+            "[{}][{}] [{}]({}) isn't a valid URL (or path)",
+            file_path.display(),
+            format_range(&range),
+            self.text,
+            self.url
+        );
     }
 }

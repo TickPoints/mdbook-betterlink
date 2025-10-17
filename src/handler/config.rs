@@ -48,7 +48,7 @@ impl ProcessorConfig {
             link_checker_config: raw_table
                 .get("link_checkef")
                 .and_then(|v| v.as_table())
-                .map(|v| LinkCheckerConfig::parse(v))
+                .map(LinkCheckerConfig::parse)
                 .unwrap_or_default(),
         }
     }

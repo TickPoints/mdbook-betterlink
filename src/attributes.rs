@@ -55,13 +55,15 @@ impl fmt::Display for VersionTuple {
 /// Constant: The version of the mdbook on which the build (/development) depends.
 pub const DEPENDENT_VERSION: VersionTuple = VersionTuple(0, 4, 52);
 
+// Waiting for mdbook update
+//pub const DEFAULT_PARSER_OPTIONS: Options = Options::ENABLE_FOOTNOTES | Options::ENABLE_MATH | Options::ENABLE_GFM;
+
 /// About the default parser config of pulldown_cmark in the crate.
 ///
 /// Supports:
 /// - GitHub-compatible footnote syntax.
+///
 /// Waiting for mdbook update:
 /// - TeX formulas. (`$` type)
 /// - Blockquote tags (`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`).
-//pub const DEFAULT_PARSER_OPTIONS: Options = Options::ENABLE_FOOTNOTES | Options::ENABLE_MATH | Options::ENABLE_GFM;
-// Waiting for mdbook update
 pub const DEFAULT_PARSER_OPTIONS: Options = Options::ENABLE_FOOTNOTES;

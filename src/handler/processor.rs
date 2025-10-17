@@ -5,6 +5,7 @@ use mdbook::preprocess::{Preprocessor, PreprocessorContext};
 
 use crate::attributes;
 
+#[derive(Clone, Debug, Default)]
 pub struct Handler;
 
 /// Preprocessor, using Handler on name.

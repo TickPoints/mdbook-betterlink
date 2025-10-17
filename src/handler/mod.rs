@@ -1,6 +1,6 @@
-mod book_handler;
-mod config;
-mod processor;
+pub mod book_handler;
+pub mod config;
+pub mod processor;
 
 use mdbook::preprocess::Preprocessor;
 use std::io;

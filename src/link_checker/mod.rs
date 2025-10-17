@@ -2,7 +2,7 @@ use pulldown_cmark::{CowStr, Event, LinkType, Tag, TagEnd};
 use std::path::{Path, PathBuf};
 
 pub mod config;
-mod path_checker;
+pub mod path_checker;
 
 use config::LinkCheckerConfig;
 

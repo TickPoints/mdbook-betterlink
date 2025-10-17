@@ -49,6 +49,14 @@ display_processed_contexts = true
 ## Set to true to do link checking during preprocessing
 ## Default is true
 do_link_check = true
+
+[preprocessor.betterlink.link_checker]
+# Configure Link Checker
+# **Warn**: None of the following is stable, use as appropriate
+
+## Set the level of the prompt when a bad link is found
+## The level of the prompt is from high to low in [1, 5]
+## Default is 1 (`Level::Error`)
 ```
 
 ## Changelog

@@ -48,6 +48,15 @@ display_processed_contexts = true
 ## 设为true以在预处理时做链接检查
 ## 默认为true
 do_link_check = true
+
+[preprocessor.betterlink.link_checker]
+# 配置链接检查器
+# **警告**: 以下内容均不稳定，酌情使用
+
+## 设置发现不良链接时提示的等级
+## 该提示等级由大到小介于 [1, 5]
+## 默认为1 (`Level::Error`)
+prompt_level = 1
 ```
 
 ## Changelog

@@ -87,7 +87,12 @@ fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, src: &std::pa
         log::debug!("new context: {0}", chapter.content);
     }
     if config.do_link_check {
-        crate::link_checker::check_link(&chapter.content, &chapter.source_path, src);
+        crate::link_checker::check_link(
+            &chapter.content,
+            &chapter.source_path,
+            src,
+            &config.link_checker_config,
+        );
     }
 }
 

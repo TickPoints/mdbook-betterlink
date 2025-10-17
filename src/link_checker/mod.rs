@@ -4,6 +4,8 @@ use std::path::{Path, PathBuf};
 pub mod config;
 mod path_checker;
 
+use config::LinkCheckerConfig;
+
 fn format_range(range: &std::ops::Range<usize>) -> String {
     if range.is_empty() {
         range.start.to_string()
@@ -18,7 +20,7 @@ fn format_range(range: &std::ops::Range<usize>) -> String {
 /// * `context` - The markdown content to check
 /// * `path` - Optional path to the markdown file (used for relative path resolution)
 /// * `root` - Root directory that all links must be contained within (It's the `src/` of the current book)
-pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path) {
+pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path, conf: &LinkCheckerConfig) {
     // Early return if path is None to avoid unnecessary processing
     let Some(file_path) = path else {
         return;

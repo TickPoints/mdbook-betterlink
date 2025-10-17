@@ -1,3 +1,4 @@
+use crate::link_checker::config::LinkCheckerConfig;
 use toml::value::Table;
 
 /// Parsing config.
@@ -24,6 +25,10 @@ pub struct ProcessorConfig {
     /// Check links in the processing phase.
     /// Default: true
     pub do_link_check: bool,
+
+    /// Link Checker Config
+    /// Default: ...
+    pub link_checker_config: LinkCheckerConfig,
 }
 
 fn get_bool_config(table: &Table, key: &str, default: bool) -> bool {
@@ -40,6 +45,11 @@ impl ProcessorConfig {
                 true,
             ),
             do_link_check: get_bool_config(raw_table, "do_link_check", true),
+            link_checker_config: raw_table
+                .get("link_checkef")
+                .and_then(|v| v.as_table())
+                .map(|v| LinkCheckerConfig::parse(v))
+                .unwrap_or_default(),
         }
     }
 }
@@ -50,6 +60,7 @@ impl Default for ProcessorConfig {
             add_link_for_chinese: false,
             display_processed_contexts: true,
             do_link_check: true,
+            link_checker_config: LinkCheckerConfig::default(),
         }
     }
 }

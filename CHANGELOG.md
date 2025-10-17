@@ -2,6 +2,14 @@
 1. The logs are sorted in reverse order.
 2. A preview with a pre suffix.
 
+## 0.3.3
+- Fixed path system
+- Refactored:
+    - Splited mods
+    - Used clearer attributes
+- Exported more content to read document comment
+- Updated docs
+
 ## 0.3.2-pre
 - Added the `pulldown-cmark` crate for simplify parsing
 - Added more docs comments to help understand

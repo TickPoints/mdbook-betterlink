@@ -1,6 +1,7 @@
 use pulldown_cmark::{CowStr, Event, LinkType, Tag, TagEnd};
 use std::path::{Path, PathBuf};
 
+pub mod config;
 mod path_checker;
 
 fn format_range(range: &std::ops::Range<usize>) -> String {
@@ -23,7 +24,8 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path) {
         return;
     };
 
-    let events = pulldown_cmark::Parser::new_ext(context, pulldown_cmark::Options::all());
+    let events =
+        pulldown_cmark::Parser::new_ext(context, crate::attributes::DEFAULT_PARSER_OPTIONS);
     let mut link_state = LinkState::new();
 
     for (event, range) in events.into_offset_iter() {
@@ -97,4 +99,3 @@ impl<'a> LinkState<'a> {
         self.url = CowStr::Borrowed("");
     }
 }
-

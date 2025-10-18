@@ -1,8 +1,9 @@
+use log;
 use pulldown_cmark::{CowStr, LinkType};
 use std::path::Path;
-use log;
 
 /// Tracks the state of a link being processed
+#[derive(Clone, Debug)]
 pub struct LinkState<'a> {
     active: bool,
     text: String,
@@ -19,7 +20,7 @@ impl<'a> LinkState<'a> {
             link_type: LinkType::Inline,
         }
     }
-    
+
     pub fn url(&self) -> &CowStr<'a> {
         &self.url
     }
@@ -57,6 +58,27 @@ impl<'a> LinkState<'a> {
         self.url = CowStr::Borrowed("");
     }
 
+    pub fn check_and_prompt(
+        &mut self,
+        file_path: &Path,
+        range: std::ops::Range<usize>,
+        root: &Path,
+        prompt_level: log::Level,
+    ) -> bool {
+        let mut has_issue = false;
+
+        if self.is_broken() {
+            self.prompt_broken(file_path, range, prompt_level);
+            has_issue = true;
+        } else if !super::path_checker::check_path(&self.url, file_path, root) {
+            self.prompt_valid(file_path, range, prompt_level);
+            has_issue = true;
+        }
+
+        self.reset();
+        has_issue
+    }
+
     pub fn prompt_valid(
         &self,
         file_path: &Path,
@@ -86,5 +108,11 @@ impl<'a> LinkState<'a> {
             super::format_range(&range),
             self.text
         );
+    }
+}
+
+impl<'a> Default for LinkState<'a> {
+    fn default() -> Self {
+        Self::new()
     }
 }

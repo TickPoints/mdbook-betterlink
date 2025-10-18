@@ -2,8 +2,8 @@ use pulldown_cmark::{Event, Tag, TagEnd};
 use std::path::{Path, PathBuf};
 
 pub mod config;
-pub mod path_checker;
 pub mod link_state;
+pub mod path_checker;
 
 use config::LinkCheckerConfig;
 use link_state::LinkState;
@@ -34,7 +34,8 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path, conf: &Lin
         return;
     };
 
-    let events = pulldown_cmark::Parser::new_ext(context, crate::attributes::DEFAULT_PARSER_OPTIONS);
+    let events =
+        pulldown_cmark::Parser::new_ext(context, crate::attributes::DEFAULT_PARSER_OPTIONS);
     let mut link_state = LinkState::new();
 
     for (event, range) in events.into_offset_iter() {
@@ -50,15 +51,9 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path, conf: &Lin
                 link_state.append_text(&text);
             }
             Event::End(TagEnd::Link) if link_state.should_check() => {
-                if link_state.is_broken() {
-                    link_state.prompt_broken(file_path, range, conf.prompt_level);
-                    link_state.reset();
-                    continue;
+                if link_state.should_check() {
+                    link_state.check_and_prompt(file_path, range, root, conf.prompt_level);
                 }
-                if !path_checker::check_path(link_state.url(), file_path, root) {
-                    link_state.prompt_valid(file_path, range, conf.prompt_level);
-                }
-                link_state.reset();
             }
             _ => {}
         }

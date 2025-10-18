@@ -23,12 +23,10 @@ env_logger = "0.11"
 
 # parser
 serde_json = "1.0"
+addr = "0.15"
 ## Matches the current older version of the mdbook.
 ## When mdbook is stable at 0.5, it is promoted.
 toml = "0.5"
-## Used to parse the URL.
-## This feature may become optional in the future.
-url = "2.5"
 ## Used to parse markdown
 ## Matches the current older version of the mdbook.
 ## When mdbook is stable at 0.5, it is promoted.

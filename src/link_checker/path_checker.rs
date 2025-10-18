@@ -16,10 +16,8 @@ pub fn check_path(url: &str, path: &Path, root: &Path) -> bool {
 }
 
 /// Checks if a string is a valid URL
-///
-/// Use [addr](https://crates.io/crates/addr) crate to support more forms of domain names.
-pub fn check_url(url: &str) -> bool {
-    addr::parse_domain_name(url).is_ok()
+pub fn check_url(path: &str) -> bool {
+    url::Url::parse(path).is_ok()
 }
 
 /// Checks if a path is a valid relative path within the root directory.

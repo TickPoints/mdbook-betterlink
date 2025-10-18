@@ -49,7 +49,11 @@ impl<'a> LinkState<'a> {
     }
 
     pub fn should_check(&self) -> bool {
-        self.active && (matches!(self.link_type, LinkType::Inline) || self.is_broken())
+        self.active
+            && (matches!(
+                self.link_type,
+                LinkType::Inline | LinkType::Autolink | LinkType::Reference | LinkType::Collapsed
+            ) || self.is_broken())
     }
 
     pub fn reset(&mut self) {

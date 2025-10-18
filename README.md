@@ -57,6 +57,7 @@ do_link_check = true
 ## Set the level of the prompt when a bad link is found
 ## The level of the prompt is from high to low in [1, 5]
 ## Default is 1 (`Level::Error`)
+prompt_level = 1
 ```
 
 ## Changelog

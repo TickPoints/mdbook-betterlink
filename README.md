@@ -11,14 +11,23 @@
 BetterLink is designed to provide better hyperlink effects for MDBOOK.
 
 ## Why
-It addresses some pain points I perceive regarding hyperlinks in MDBook:
-> [!WARNING]
-> The `do_link_check` feature now has the following problem:
-> - [ ] May not be covered in some cases
-> - [ ] Several special link forms are not yet supported
-
-- [x] Adds `<a>` tags to headings in other languages
+- [x] Adds `<a>` tags for titles with more symbols or languages as well
 - [x] Checks for invalid links
+
+Regarding the link check, we do the following:
+
+| Link Type | General Syntax | Handling Principles | Others |
+|:-------:|:-------:|:-------|:-------|
+| **Broken**(_Unknown_) | _The broken link has no general syntax_ | Always issues warnings | A broken link is one with syntax errors, including `ReferenceUnknown`, `ShortcutUnknown`, and `CollapsedUnknown`. |
+| **Inline** | `[name](url)` format | Warn on bad links | Check if the `url` is accessible (or if the file path exists). |
+| **Reference** | `[name][note]` format | Neglect | Reference links point to footnotes. _Future support possible_. |
+| **Collapsed** | `[note][]` format | Neglect | Collapsed links point to footnotes (similar to references, omitting `note` when name `matches`). _Future support possible_. |
+| **Shortcut**(_Direct footnote_) | `[note]` format | Neglect | Shortcut links point to footnotes (like references but omit `[note]` when name matches). _Future support possible_. |
+| **Autolink or Email** | `<url>` format | Warn on bad links | This type of link removes the `name` and directly displays the `url` (such as a regular web address or email). We will verify the accessibility of the `url` (excluding file path checks). |
+| **WikiLink** | `[[name|page]]` or `[[page]]` format | Neglect | WikiLinks are **not** part of the CommonMark standard. **In principle, we will not support them.** |
+
+> [!WARNING]
+> The checker of Autolink or Email isn't stable.
 
 ## How
 BetterLink is a plugin that functions as a preprocessor. You can use BetterLink just like any other plugin.

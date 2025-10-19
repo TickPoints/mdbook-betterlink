@@ -11,11 +11,20 @@ pub struct LinkState<'a> {
     link_type: LinkType,
 }
 
+/// Represents different types of link issues
+#[derive(Debug)]
+enum LinkIssue {
+    Broken,
+    InvalidSimple,
+    InvalidPath,
+    Valid,
+}
+
 impl<'a> LinkState<'a> {
     pub fn new() -> Self {
         Self {
             active: false,
-            text: String::with_capacity(128), // Pre-allocate reasonable capacity
+            text: String::with_capacity(128),
             url: CowStr::Borrowed(""),
             link_type: LinkType::Inline,
         }
@@ -29,7 +38,7 @@ impl<'a> LinkState<'a> {
         self.active = true;
         self.url = url;
         self.link_type = link_type;
-        self.text.clear(); // Reset text when starting new link
+        self.text.clear();
     }
 
     pub fn append_text(&mut self, text: &str) {
@@ -41,25 +50,48 @@ impl<'a> LinkState<'a> {
     }
 
     pub fn is_broken(&self) -> bool {
-        self.active
-            && matches!(
-                self.link_type,
-                LinkType::ShortcutUnknown | LinkType::CollapsedUnknown | LinkType::ReferenceUnknown
-            )
+        self.active && matches!(
+            self.link_type,
+            LinkType::ShortcutUnknown | LinkType::CollapsedUnknown | LinkType::ReferenceUnknown
+        )
+    }
+
+    pub fn is_simple(&self) -> bool {
+        self.active && matches!(self.link_type, LinkType::Autolink/* | LinkType::Email*/)
     }
 
     pub fn should_check(&self) -> bool {
-        self.active
-            && (matches!(
-                self.link_type,
-                LinkType::Inline | LinkType::Autolink | LinkType::Reference | LinkType::Collapsed
-            ) || self.is_broken())
+        self.active && (matches!(
+            self.link_type,
+            LinkType::Inline | LinkType::Autolink/* | LinkType::Email*/
+        ) || self.is_broken())
     }
 
     pub fn reset(&mut self) {
         self.active = false;
         self.text.clear();
         self.url = CowStr::Borrowed("");
+    }
+
+    /// Determine what kind of issue the link has (if any)
+    fn classify_issue(&self, file_path: &Path, root: &Path) -> LinkIssue {
+        if !self.active {
+            return LinkIssue::Valid;
+        }
+
+        match () {
+            _ if self.is_broken() => LinkIssue::Broken,
+            _ if self.is_simple() => {
+                log::debug!("SimpleLink:\n\tUrl:{}\n\tText:{}", self.url, self.text);
+                if !super::path_checker::check_url(&self.url) {
+                    LinkIssue::InvalidSimple
+                } else {
+                    LinkIssue::Valid
+                }
+            },
+            _ if !super::path_checker::check_path(&self.url, file_path, root) => LinkIssue::InvalidPath,
+            _ => LinkIssue::Valid,
+        }
     }
 
     pub fn check_and_prompt(
@@ -69,48 +101,44 @@ impl<'a> LinkState<'a> {
         root: &Path,
         prompt_level: log::Level,
     ) -> bool {
-        let mut has_issue = false;
-
-        if self.is_broken() {
-            self.prompt_broken(file_path, range, prompt_level);
-            has_issue = true;
-        } else if !super::path_checker::check_path(&self.url, file_path, root) {
-            self.prompt_valid(file_path, range, prompt_level);
-            has_issue = true;
-        }
+        let issue = self.classify_issue(file_path, root);
+        
+        let has_issue = match issue {
+            LinkIssue::Broken => {
+                self.log_issue(file_path, range, prompt_level, "broken", &format!("[{}] is a broken URL (or path).\nWarn: The behavior is not yet stable.", self.text));
+                true
+            },
+            LinkIssue::InvalidSimple => {
+                self.log_issue(file_path, range, prompt_level, "invalid", &format!("<{}> isn't a valid URL.", self.text));
+                true
+            },
+            LinkIssue::InvalidPath => {
+                self.log_issue(file_path, range, prompt_level, "invalid", &format!("[{}]({}) isn't a valid URL (or path).", self.text, self.url));
+                true
+            },
+            LinkIssue::Valid => false,
+        };
 
         self.reset();
         has_issue
     }
 
-    pub fn prompt_valid(
+    /// Helper method to log issues with consistent formatting
+    fn log_issue(
         &self,
         file_path: &Path,
         range: std::ops::Range<usize>,
-        prompt_level: log::Level,
+        level: log::Level,
+        issue_type: &str,
+        message: &str,
     ) {
         log::log!(
-            prompt_level,
-            "[{}][{}] [{}]({}) isn't a valid URL (or path)",
+            level,
+            "[{}][{}][{}] {}",
             file_path.display(),
             super::format_range(&range),
-            self.text,
-            self.url
-        );
-    }
-
-    pub fn prompt_broken(
-        &self,
-        file_path: &Path,
-        range: std::ops::Range<usize>,
-        prompt_level: log::Level,
-    ) {
-        log::log!(
-            prompt_level,
-            "[{}][{}] [{}] isn't a broken URL (or path)",
-            file_path.display(),
-            super::format_range(&range),
-            self.text
+            issue_type,
+            message
         );
     }
 }

@@ -54,7 +54,10 @@ pub fn is_valid_link_target(target: &str, base_path: &Path, root: &Path) -> Opti
     } else {
         let base_dir = root.join(base_path.parent()?);
         let joined_path = base_dir.join(path_part);
-        joined_path.canonicalize().ok()?
+        match joined_path.canonicalize() {
+            Ok(canonicalized_path) => canonicalized_path,
+            Err(_) => return Some(false),
+        }
     };
 
     // Check if the path exists and is within the root directory

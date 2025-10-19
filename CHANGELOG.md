@@ -2,6 +2,12 @@
 1. The logs are sorted in reverse order.
 2. A preview with a pre suffix.
 
+## 0.3.4-pre
+- Refactored:
+    - Splited mods
+- Updated docs
+- Supported for more Link
+
 ## 0.3.3
 - Fixed path system
 - Refactored:

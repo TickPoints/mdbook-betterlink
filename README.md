@@ -24,7 +24,7 @@ Regarding the link check, we do the following:
 | **Collapsed** | `[note][]` format | Neglect | Collapsed links point to footnotes (similar to references, omitting `note` when name `matches`). _Future support possible_. |
 | **Shortcut**(_Direct footnote_) | `[note]` format | Neglect | Shortcut links point to footnotes (like references but omit `[note]` when name matches). _Future support possible_. |
 | **Autolink or Email** | `<url>` format | Warn on bad links | This type of link removes the `name` and directly displays the `url` (such as a regular web address or email). We will verify the accessibility of the `url` (excluding file path checks). |
-| **WikiLink** | `[[name|page]]` or `[[page]]` format | Neglect | WikiLinks are **not** part of the CommonMark standard. **In principle, we will not support them.** |
+| **WikiLink** | `[[page]]` format | Neglect | WikiLinks are **not** part of the CommonMark standard. **In principle, we will not support them.** |
 
 > [!WARNING]
 > The checker of Autolink or Email isn't stable.

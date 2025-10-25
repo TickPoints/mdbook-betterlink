@@ -46,6 +46,12 @@ impl From<[usize; 3]> for VersionTuple {
     }
 }
 
+impl From<&str> for VersionTuple {
+    fn from(v: &str) -> Self {
+        VersionTuple::parse_version(v)
+    }
+}
+
 impl fmt::Display for VersionTuple {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "({}, {}, {})", self.0, self.1, self.2)

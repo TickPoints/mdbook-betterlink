@@ -2,6 +2,10 @@
 1. The logs are sorted in reverse order.
 2. A preview with a pre suffix.
 
+## 0.3.5
+- Supported compatibility with TeX formulas and Blockquote tags parsing in `link_checker`
+- Updated deps
+
 ## 0.3.4-pre
 - Refactored:
     - Splited mods
@@ -20,9 +24,6 @@
 - Added the `pulldown-cmark` crate for simplify parsing
 - Added more docs comments to help understand
 - Refactored the `link_checker` mod
-
-> [!WARNING]
-> This is a temporary modification. There is no complete correction of the error.
 
 ## 0.3.1-pre
 - Refactored simply to keep clippy happy

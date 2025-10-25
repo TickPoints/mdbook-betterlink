@@ -27,10 +27,8 @@ url = "2.5"
 ## Matches the current older version of the mdbook.
 ## When mdbook is stable at 0.5, it is promoted.
 toml = "0.5"
-## Used to parse markdown
-## Matches the current older version of the mdbook.
-## When mdbook is stable at 0.5, it is promoted.
-pulldown-cmark = "0.10"
+## For better results, we will not wait for the time being.
+pulldown-cmark = "0.13"
 
 [profile.release]
 lto = true

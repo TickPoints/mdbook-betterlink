@@ -647,7 +647,6 @@ dependencies = [
 name = "mdbook-betterlink"
 version = "0.3.4-pre"
 dependencies = [
- "bitflags",
  "clap",
  "env_logger",
  "log",

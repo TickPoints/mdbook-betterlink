@@ -645,7 +645,7 @@ dependencies = [
 
 [[package]]
 name = "mdbook-betterlink"
-version = "0.3.4-pre"
+version = "0.3.5"
 dependencies = [
  "clap",
  "env_logger",

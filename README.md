@@ -16,6 +16,9 @@ BetterLink is designed to provide better hyperlink effects for MDBOOK.
 
 Regarding the link check, we do the following:
 
+**For various reasons, we only check whether the `url` can be parsed normally, and do not try to test the access connectivity.**
+
+
 | Link Type | General Syntax | Handling Principles | Others |
 |:-------:|:-------:|:-------|:-------|
 | **Broken**(_Unknown_) | _The broken link has no general syntax_ | Always issues warnings | A broken link is one with syntax errors, including `ReferenceUnknown`, `ShortcutUnknown`, and `CollapsedUnknown`. |

@@ -11,6 +11,7 @@
 BetterLink is designed to provide better hyperlink effects for MDBOOK.
 
 ## Why
+It addresses some pain points I perceive regarding hyperlinks in MDBook:
 - [x] Adds `<a>` tags for titles with more symbols or languages as well
 - [x] Checks for invalid links
 

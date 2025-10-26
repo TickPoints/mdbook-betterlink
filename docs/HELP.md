@@ -29,6 +29,13 @@ do_link_check = true
 ## Set severity level for bad links (1=highest, 5=lowest)
 ## Default: 1 (Level::Error)
 prompt_level = 1
+
+## Configure Blocked Blacklist
+## Links pointing to these URLs will trigger immediate warnings (prioritized over other checks)
+## Requires exact URL/path matching (may be optimized in future)
+## Should be provided as a list
+## Default: [] (`HashSet::default()`)
+black_list = ["example"]
 ```
 
 # Support

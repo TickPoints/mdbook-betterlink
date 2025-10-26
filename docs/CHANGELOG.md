@@ -2,6 +2,12 @@
 1. The logs are sorted in reverse order.
 2. A preview with a pre suffix.
 
+## 0.3.6-pre
+- Added the `black_list` config
+- Added the `check` subcommand (**todo**)
+- Updated docs
+- Fixed logger
+
 ## 0.3.5
 - Supported compatibility with TeX formulas and Blockquote tags parsing in `link_checker`
 - Updated deps

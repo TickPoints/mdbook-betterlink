@@ -29,7 +29,7 @@ cargo install mdbook-betterlink
 # Enable betterlink
 ```
 
-更多内容可以访问[HELP.md](https://github.com/TickPoints/mdbook-betterlink/blob/main/docs/HELP.md)。
+More information can be found at [HELP.md](https://github.com/TickPoints/mdbook-betterlink/blob/main/docs/HELP.md)。
 
 ## Changelog
 View the [CHANGELOG.md](https://github.com/TickPoints/mdbook-betterlink/blob/main/docs/CHANGELOG.md) here.

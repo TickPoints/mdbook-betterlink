@@ -39,6 +39,8 @@ fn main() {
         // Because it is compatible with most backends,
         // Most of the time, exit with 0.
         process::exit(0);
+    } else if args.subcommand_matches("check").is_some() {
+        todo!();
     } else {
         handler::handle();
     }

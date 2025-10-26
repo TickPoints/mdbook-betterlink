@@ -68,7 +68,5 @@ pub const DEPENDENT_VERSION: VersionTuple = VersionTuple(0, 4, 52);
 /// - TeX formulas. (`$` type)
 /// - Blockquote tags (`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`).
 pub const DEFAULT_PARSER_OPTIONS: Options = Options::from_bits_truncate(
-    Options::ENABLE_FOOTNOTES.bits() |
-    Options::ENABLE_MATH.bits() |
-    Options::ENABLE_GFM.bits()
+    Options::ENABLE_FOOTNOTES.bits() | Options::ENABLE_MATH.bits() | Options::ENABLE_GFM.bits(),
 );

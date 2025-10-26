@@ -52,7 +52,7 @@ pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path, conf: &Lin
             }
             Event::End(TagEnd::Link) if link_state.should_check() => {
                 if link_state.should_check() {
-                    link_state.check_and_prompt(file_path, range, root, conf.prompt_level);
+                    link_state.check_and_prompt(file_path, range, root, conf);
                 }
             }
             _ => {}

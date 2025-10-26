@@ -1,3 +1,4 @@
+use super::config::LinkCheckerConfig;
 use log;
 use pulldown_cmark::{CowStr, LinkType};
 use std::path::Path;
@@ -50,21 +51,23 @@ impl<'a> LinkState<'a> {
     }
 
     pub fn is_broken(&self) -> bool {
-        self.active && matches!(
-            self.link_type,
-            LinkType::ShortcutUnknown | LinkType::CollapsedUnknown | LinkType::ReferenceUnknown
-        )
+        self.active
+            && matches!(
+                self.link_type,
+                LinkType::ShortcutUnknown | LinkType::CollapsedUnknown | LinkType::ReferenceUnknown
+            )
     }
 
     pub fn is_simple(&self) -> bool {
-        self.active && matches!(self.link_type, LinkType::Autolink/* | LinkType::Email*/)
+        self.active && matches!(self.link_type, LinkType::Autolink | LinkType::Email)
     }
 
     pub fn should_check(&self) -> bool {
-        self.active && (matches!(
-            self.link_type,
-            LinkType::Inline | LinkType::Autolink/* | LinkType::Email*/
-        ) || self.is_broken())
+        self.active
+            && (matches!(
+                self.link_type,
+                LinkType::Inline | LinkType::Autolink | LinkType::Email
+            ) || self.is_broken())
     }
 
     pub fn reset(&mut self) {
@@ -74,7 +77,7 @@ impl<'a> LinkState<'a> {
     }
 
     /// Determine what kind of issue the link has (if any)
-    fn classify_issue(&self, file_path: &Path, root: &Path) -> LinkIssue {
+    fn classify_issue(&self, file_path: &Path, root: &Path, conf: &LinkCheckerConfig) -> LinkIssue {
         if !self.active {
             return LinkIssue::Valid;
         }
@@ -88,8 +91,10 @@ impl<'a> LinkState<'a> {
                 } else {
                     LinkIssue::Valid
                 }
-            },
-            _ if !super::path_checker::check_path(&self.url, file_path, root) => LinkIssue::InvalidPath,
+            }
+            _ if !super::path_checker::check_path(&self.url, file_path, root, conf) => {
+                LinkIssue::InvalidPath
+            }
             _ => LinkIssue::Valid,
         }
     }
@@ -99,23 +104,45 @@ impl<'a> LinkState<'a> {
         file_path: &Path,
         range: std::ops::Range<usize>,
         root: &Path,
-        prompt_level: log::Level,
+        conf: &LinkCheckerConfig,
     ) -> bool {
-        let issue = self.classify_issue(file_path, root);
-        
+        let issue = self.classify_issue(file_path, root, conf);
+        let prompt_level = conf.prompt_level;
+
         let has_issue = match issue {
             LinkIssue::Broken => {
-                self.log_issue(file_path, range, prompt_level, "broken", &format!("[{}] is a broken URL (or path).\nWarn: The behavior is not yet stable.", self.text));
+                self.log_issue(
+                    file_path,
+                    range,
+                    prompt_level,
+                    "broken",
+                    &format!(
+                        "[{}] is a broken URL (or path).\nWarn: The behavior is not yet stable",
+                        self.text
+                    ),
+                );
                 true
-            },
+            }
             LinkIssue::InvalidSimple => {
-                self.log_issue(file_path, range, prompt_level, "invalid", &format!("<{}> isn't a valid URL.", self.text));
+                self.log_issue(
+                    file_path,
+                    range,
+                    prompt_level,
+                    "invalid",
+                    &format!("<{}> isn't a valid URL.", self.text),
+                );
                 true
-            },
+            }
             LinkIssue::InvalidPath => {
-                self.log_issue(file_path, range, prompt_level, "invalid", &format!("[{}]({}) isn't a valid URL (or path).", self.text, self.url));
+                self.log_issue(
+                    file_path,
+                    range,
+                    prompt_level,
+                    "invalid",
+                    &format!("[{}]({}) isn't a valid URL (or path).", self.text, self.url),
+                );
                 true
-            },
+            }
             LinkIssue::Valid => false,
         };
 

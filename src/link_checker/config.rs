@@ -11,15 +11,32 @@ pub struct LinkCheckerConfig {
     /// See [log::Level](https://docs.rs/log/latest/log/enum.Level.html).
     /// Default: `Level::Error` (or 1)
     pub prompt_level: Level,
+    /// Black `url` list.
+    /// If a url is in this list, we'll prompt always.
+    /// Values in Array that are not strings are not converted (and **no warning**).
+    /// Default: `Vec::default()` (or `[]`)
+    ///
+    /// Item Format: "example.com".
+    /// The sub-domain name and related content of the website will be included in the blacklist.
+    /// (e.g. "www.example.com", "example.com/index")
+    /// **An exact URL/path match is also pulled into the blacklist.**
+    ///
+    /// In the future, we'll use `HashSet` instead of `Vec`.
+    pub black_list: Vec<String>,
 }
 
-/*
-// unused:
-
-fn get_bool_config(table: &Table, key: &str, default: bool) -> bool {
-    table.get(key).and_then(|v| v.as_bool()).unwrap_or(default)
+fn get_str_vec_config(table: &Table, key: &str, default: Vec<String>) -> Vec<String> {
+    table
+        .get(key)
+        .and_then(|v| v.as_array())
+        .map(|list| {
+            list.iter()
+                .filter_map(|x| x.as_str())
+                .map(|x| x.to_string())
+                .collect()
+        })
+        .unwrap_or(default)
 }
-*/
 
 fn get_integer_config(table: &Table, key: &str, default: i64) -> i64 {
     table
@@ -32,6 +49,7 @@ impl LinkCheckerConfig {
     pub fn parse(raw_table: &Table) -> Self {
         Self {
             prompt_level: Self::parse_log_level(get_integer_config(raw_table, "prompt_level", 1)),
+            black_list: get_str_vec_config(raw_table, "black_list", Vec::default()),
         }
     }
 
@@ -72,6 +90,7 @@ impl Default for LinkCheckerConfig {
     fn default() -> Self {
         Self {
             prompt_level: Level::Error,
+            black_list: Vec::default(),
         }
     }
 }

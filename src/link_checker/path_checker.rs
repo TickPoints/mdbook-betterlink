@@ -5,7 +5,15 @@ use std::path::Path;
 /// Returns true if:
 /// - The URL is a valid absolute URL, or
 /// - The path exists as a file within the root directory
-pub fn check_path(url: &str, path: &Path, root: &Path) -> bool {
+pub fn check_path(
+    url: &str,
+    path: &Path,
+    root: &Path,
+    conf: &super::config::LinkCheckerConfig,
+) -> bool {
+    if conf.black_list.contains(&url.to_string()) {
+        return false;
+    }
     check_url(url)
         || is_valid_link_target(url, path, root).unwrap_or_else(|| {
             log::warn!(

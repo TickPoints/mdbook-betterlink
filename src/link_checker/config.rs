@@ -17,10 +17,7 @@ pub struct LinkCheckerConfig {
     /// Values in Array that are not strings are not converted (and **no warning**).
     /// Default: `HashSet::default()` (or `[]`)
     ///
-    /// Item Format: "example.com".
-    /// The sub-domain name and related content of the website will be included in the blacklist.
-    /// (e.g. "www.example.com", "example.com/index")
-    /// **An exact URL/path match is also pulled into the blacklist.**
+    /// **Only an exact URL/path match is pulled into the blacklist.**
     pub black_list: HashSet<String>,
 }
 

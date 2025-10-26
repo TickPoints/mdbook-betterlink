@@ -1,6 +1,6 @@
 use log::Level;
-use toml::value::Table;
 use std::collections::HashSet;
+use toml::value::Table;
 
 /// It is about the configuration of link checker.
 /// We're going to read `preprocessor.betterlink.link_checker` fields in the book's config.

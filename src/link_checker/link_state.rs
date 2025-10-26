@@ -85,7 +85,6 @@ impl<'a> LinkState<'a> {
         match () {
             _ if self.is_broken() => LinkIssue::Broken,
             _ if self.is_simple() => {
-                log::debug!("SimpleLink:\n\tUrl:{}\n\tText:{}", self.url, self.text);
                 if !super::path_checker::check_url(&self.url) {
                     LinkIssue::InvalidSimple
                 } else {

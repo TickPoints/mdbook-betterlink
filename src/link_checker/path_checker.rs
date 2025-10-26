@@ -11,7 +11,7 @@ pub fn check_path(
     root: &Path,
     conf: &super::config::LinkCheckerConfig,
 ) -> bool {
-    if conf.black_list.contains(&url.to_string()) {
+    if conf.black_list.contains(url) {
         return false;
     }
     check_url(url)

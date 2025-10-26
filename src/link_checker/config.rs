@@ -1,5 +1,6 @@
 use log::Level;
 use toml::value::Table;
+use std::collections::HashSet;
 
 /// It is about the configuration of link checker.
 /// We're going to read `preprocessor.betterlink.link_checker` fields in the book's config.
@@ -14,18 +15,16 @@ pub struct LinkCheckerConfig {
     /// Black `url` list.
     /// If a url is in this list, we'll prompt always.
     /// Values in Array that are not strings are not converted (and **no warning**).
-    /// Default: `Vec::default()` (or `[]`)
+    /// Default: `HashSet::default()` (or `[]`)
     ///
     /// Item Format: "example.com".
     /// The sub-domain name and related content of the website will be included in the blacklist.
     /// (e.g. "www.example.com", "example.com/index")
     /// **An exact URL/path match is also pulled into the blacklist.**
-    ///
-    /// In the future, we'll use `HashSet` instead of `Vec`.
-    pub black_list: Vec<String>,
+    pub black_list: HashSet<String>,
 }
 
-fn get_str_vec_config(table: &Table, key: &str, default: Vec<String>) -> Vec<String> {
+fn get_str_vec_config(table: &Table, key: &str, default: HashSet<String>) -> HashSet<String> {
     table
         .get(key)
         .and_then(|v| v.as_array())
@@ -49,7 +48,7 @@ impl LinkCheckerConfig {
     pub fn parse(raw_table: &Table) -> Self {
         Self {
             prompt_level: Self::parse_log_level(get_integer_config(raw_table, "prompt_level", 1)),
-            black_list: get_str_vec_config(raw_table, "black_list", Vec::default()),
+            black_list: get_str_vec_config(raw_table, "black_list", HashSet::default()),
         }
     }
 
@@ -90,7 +89,7 @@ impl Default for LinkCheckerConfig {
     fn default() -> Self {
         Self {
             prompt_level: Level::Error,
-            black_list: Vec::default(),
+            black_list: HashSet::default(),
         }
     }
 }

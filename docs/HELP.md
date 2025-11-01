@@ -1,6 +1,7 @@
 # Help
 - [Configuration](#configuration)
 - [Support](#support)
+- [Development](#development)
 
 # Configuration
 Configure by editing fields under `[preprocessor.betterlink]` in `book.toml`:
@@ -16,12 +17,18 @@ add_link_for_chinese = false
 
 ## Set true to display processed content (output after each article)
 ## Default: true
-## Special: Only effective in Debug mode compilations
+## **Special**: Only effective in Debug mode compilations
 display_processed_contexts = true
 
 ## Set true to enable link checking during preprocessing
 ## Default: true
 do_link_check = true
+
+## Set to true to use the old `tag_adder` (i.e., the `add_a_tag` function)
+## The new `tag_adder` is unstable; this option is provided as a temporary workaround
+## Default: false (in Debug mode: false)
+## **Special**: Behavior differs for files compiled in Debug mode
+use_old_tag_adder = true
 
 [preprocessor.betterlink.link_checker]
 # Link checker configuration
@@ -74,3 +81,10 @@ Handling principles:
 
 > [!WARNING]
 > Autolink/email validation currently unstable
+
+
+# Development
+## Debug Mode
+A **Debug Build** refers to the default compilation configuration, primarily intended for development and debugging purposes. It includes **debug information tables (Debug Info)** and **debug assertions (Debug Assert)**.
+
+Starting from version `v0.3.7-pre`, this project uses **Release builds with debug info—enabling optimizations** while still retaining debug information and assertions. (Available only in -pre preview versions.)

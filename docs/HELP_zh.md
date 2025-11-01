@@ -1,6 +1,7 @@
 # 帮助
 - [配置](#配置)
 - [支持](#支持)
+- [开发](#开发)
 
 # 配置
 我们支持您在`book.toml`中编辑`[preprocessor.betterlink]`下面的字段来进行配置:
@@ -9,32 +10,38 @@
 # 我们还有下面这些可供选择的配置:
 
 ## 设为true以仅为中文标题添加`<a>`标签
-## 默认为false
+## 默认: false
 ## **不推荐**: 因为为所有标题添加`<a>`完全不破坏原始逻辑，而且令像带`-`等特殊符号的英文标题也可以正常使用
 add_link_for_chinese = false
 
 ## 设为true以显示处理过后的内容(在每一篇文章处理完后输出一次)
-## 默认为true
+## 默认: true
 ## **特殊**: 只有在Debug模式下编译的文件才有用
 display_processed_contexts = true
 
 ## 设为true以在预处理时做链接检查
-## 默认为true
+## 默认: true
 do_link_check = true
+
+## 设为true以使用旧的`tag_adder`(即`add_a_tag`函数)
+## 新的`tag_adder`功能不稳定，该配置仅为临时处理
+## 默认: false (debug: false)
+## **特殊**: 在Debug模式下编译的文件行为不同
+use_old_tag_adder = true
 
 [preprocessor.betterlink.link_checker]
 # 配置链接检查器
 
 ## 设置发现不良链接时提示的等级
 ## 该提示等级由大到小介于 [1, 5]
-## 默认为1 (`Level::Error`)
+## 默认: 1 (`Level::Error`)
 prompt_level = 1
 
 ## 设置屏蔽的黑名单
 ## 如果指向这些链接，它们将会被直接警告(这先于其他判断逻辑)
 ## 这些链接需要完全匹配，并且可以是路径(未来可能会优化)
 ## 该配置应该以列表形式提供
-## 默认为[] (`HashSet::default()`)
+## 默认: [] (`HashSet::default()`)
 black_list = ["example"]
 ```
 
@@ -72,3 +79,9 @@ black_list = ["example"]
 
 > [!WARNING]
 > 自动链接或电子邮件的检查器暂不稳定。
+
+# 开发
+## Debug模式
+**debug 编译(Debug Build)** 是指使用默认配置进行的编译方式，主要用于开发和调试阶段。包含 **调试信息表(Debug Info)** 和 **调试断言(Debug Assert)**。
+
+本项目自`v0.3.7-pre`使用 **带debug的release编译** 来 应用优化等其他内容的情况下使用调试信息表和断言。(仅`-pre`预览版)

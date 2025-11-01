@@ -49,10 +49,10 @@ black_list = ["example"]
 - TeX formulas
 - Blockquote tags
 
-其中，**Blockquote tags**原生MDBOOK不支持，可以通过[其他插件](https://github.com/lambdalisue/rs-mdbook-alerts)以支持。**TeX formulas**现在只支持使用`$`式的，自定义的可能导致错误(同理，原生的MDBOOK数学扩展我们不支持，因为它不是 TeX formulas ，可以通过[其他插件](https://github.com/lzanini/mdbook-katex)来使用)。
+其中，**Blockquote tags**原生MDBOOK不支持，可以通过[其他插件](https://github.com/lambdalisue/rs-mdbook-alerts)以支持。**TeX formulas**现在只支持使用`$`式的，自定义的可能导致错误(同理，原生的MDBOOK数学扩展我们不支持，因为它 **不是TeX formulas** ，可以通过[其他插件](https://github.com/lzanini/mdbook-katex)来使用)。
 
 > [!WARNING]
-> `add_a_tag`功能 现在**还没有**`pulldown-cmark`化，请耐心等待。
+> `pulldown-cmark`化的`add_heading_anchors`功能仍不稳定，仅`-pre`版本可用。
 
 ## 链接形式
 我们进行链接检查时，会对以下链接进行特定情况的处理:

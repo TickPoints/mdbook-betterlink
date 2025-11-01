@@ -51,10 +51,10 @@ Additional extensions:
 
 Note:
 - Blockquote tags are not natively supported by mdBook and require <https://github.com/lambdalisue/rs-mdbook-alerts>
-- TeX formulas only support $ syntax. Native mdBook math extensions are unsupported (use <https://github.com/lzanini/mdbook-katex>)
+- TeX formulas only support `$` syntax. Native mdBook math extensions are unsupported (use <https://github.com/lzanini/mdbook-katex>)
 
 > [!WARNING]
-> `add_a_tag` feature not yet integrated with `pulldown-cmark`
+> The `add_heading_anchors` feature of `pullmark-cmark` is still unstable and only available in the `-pre` version.
 
 ## Link Validation
 Handling principles:

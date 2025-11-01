@@ -69,12 +69,17 @@ impl HeadingProcessor {
     /// Handles heading-related events and inserts anchors.
     fn process_heading_event(
         &mut self,
-        event: Event,
+        event: Event<'static>,
         output_events: &mut Vec<Event>,
         check_chinese: bool,
     ) {
         match event {
-            Event::Start(Tag::Heading { level, id, classes, attrs }) if !self.in_code_block => {
+            Event::Start(Tag::Heading {
+                level,
+                id,
+                classes,
+                attrs,
+            }) if !self.in_code_block => {
                 self.start_heading(level, id, classes, attrs, output_events);
             }
             Event::Text(text) if self.is_processing_heading => {
@@ -115,10 +120,7 @@ impl HeadingProcessor {
     fn finalize_heading(&mut self, output_events: &mut Vec<Event>, check_chinese: bool) {
         if !check_chinese || contains_chinese(&self.heading_text) {
             let anchor_id = self.generate_anchor_id();
-            output_events.push(Event::Html(format!(
-                "<a id=\"{}\"></a>",
-                anchor_id
-            ).into()));
+            output_events.push(Event::Html(format!("<a id=\"{}\"></a>", anchor_id).into()));
         }
 
         output_events.push(Event::End(TagEnd::Heading(self.current_heading_level)));
@@ -133,6 +135,12 @@ impl HeadingProcessor {
     }
 }
 
+impl Default for HeadingProcessor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Processes Markdown content to add heading anchors.
 pub fn add_heading_anchors(content: &mut String, check_chinese: bool) {
     let parser =
@@ -141,10 +149,8 @@ pub fn add_heading_anchors(content: &mut String, check_chinese: bool) {
     let mut processed_events = Vec::new();
 
     for event in parser {
-        processor.process_heading_event(event, &mut processed_events, check_chinese);
+        processor.process_heading_event(event.into_static(), &mut processed_events, check_chinese);
     }
 
-    let mut new_content = String::new();
-    pulldown_cmark::html::push_html(&mut new_content, processed_events.into_iter());
-    *content = new_content;
+    let _ = pulldown_cmark_to_cmark::cmark(processed_events.into_iter(), content);
 }

@@ -25,6 +25,10 @@ pub struct ProcessorConfig {
     /// Check links in the processing phase.
     /// Default: true
     pub do_link_check: bool,
+    /// Use old `add_a_tag`.
+    /// This is because the latest version of the work is still unstable.
+    /// Default: true (pre: false)
+    pub use_old_tag_adder: bool,
 
     /// Link Checker Config
     /// Default: ...
@@ -45,6 +49,10 @@ impl ProcessorConfig {
                 true,
             ),
             do_link_check: get_bool_config(raw_table, "do_link_check", true),
+            #[cfg(debug_assertions)]
+            use_old_tag_adder: get_bool_config(raw_table, "use_old_tag_adder", false),
+            #[cfg(not(debug_assertions))]
+            use_old_tag_adder: get_bool_config(raw_table, "use_old_tag_adder", true),
             link_checker_config: raw_table
                 .get("link_checker")
                 .and_then(|v| v.as_table())
@@ -60,6 +68,10 @@ impl Default for ProcessorConfig {
             add_link_for_chinese: false,
             display_processed_contexts: true,
             do_link_check: true,
+            #[cfg(debug_assertions)]
+            use_old_tag_adder: false,
+            #[cfg(not(debug_assertions))]
+            use_old_tag_adder: true,
             link_checker_config: LinkCheckerConfig::default(),
         }
     }

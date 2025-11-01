@@ -3,9 +3,14 @@ use mdbook::book::{Book, BookItem, Chapter};
 use mdbook::preprocess::PreprocessorContext;
 
 pub mod tag_adder;
+pub mod old_tag_adder;
 
 fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, src: &std::path::Path) {
-    tag_adder::add_heading_anchors(&mut chapter.content, config.add_link_for_chinese);
+    if config.use_old_tag_adder {
+        old_tag_adder::add_a_tag(&mut chapter.content, config.add_link_for_chinese)
+    } else {
+        tag_adder::add_heading_anchors(&mut chapter.content, config.add_link_for_chinese);
+    }
     if config.display_processed_contexts {
         log::debug!("new context: {0}", chapter.content);
     }

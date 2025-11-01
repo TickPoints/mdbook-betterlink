@@ -11,8 +11,5 @@ pub fn make_app() -> Command {
                 .arg(Arg::new("renderer").required(true))
                 .about("Only for mdbook preprocessor"),
         )
-        .subcommand(
-            Command::new("check")
-                .about("Manual do link check"),
-        )
+        .subcommand(Command::new("check").about("Manual do link check"))
 }

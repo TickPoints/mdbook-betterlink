@@ -3,8 +3,15 @@
 2. The preview version has a `-pre` suffix.
 3. The preview version comes with a debug feature (after `0.3.7-pre`).
 
+## 0.3.8-pre
+- Added `old_tag_adder` to use the old `add_a_tag` function
+- Added the `use_old_tag_adder` config to use the old `add_a_tag` function
+
+### Warnings
+- Temporarily fixed
+
 ## 0.3.7-pre
-- Split `tag_adder` form `book_handler` mod
+- Splited `tag_adder` form `book_handler` mod
 - `add_a_tag` (`add_heading_anchors`) has been pull-cmarkized
 - `pulldown-cmark-to-cmark` has been added
 

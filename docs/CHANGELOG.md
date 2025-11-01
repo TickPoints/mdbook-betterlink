@@ -1,6 +1,17 @@
 ## Notes
 1. The logs are sorted in reverse order.
-2. A preview with a pre suffix.
+2. The preview version has a `-pre` suffix.
+3. The preview version comes with a debug feature (after `0.3.7-pre`).
+
+## 0.3.7-pre
+- Split `tag_adder` form `book_handler` mod
+- `add_a_tag` (`add_heading_anchors`) has been pull-cmarkized
+- `pulldown-cmark-to-cmark` has been added
+
+### Warnings
+- Changes to `add_a_tag` (`add_heading_anchors`) are not stable yet
+- Untested (There are extreme problems, and the new code sucks)
+- Bad code will be fixed in the next release. We may need two more previews.
 
 ## 0.3.6-pre
 - Added the `black_list` config

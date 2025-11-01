@@ -88,3 +88,11 @@ Handling principles:
 A **Debug Build** refers to the default compilation configuration, primarily intended for development and debugging purposes. It includes **debug information tables (Debug Info)** and **debug assertions (Debug Assert)**.
 
 Starting from version `v0.3.7-pre`, this project uses **Release builds with debug info—enabling optimizations** while still retaining debug information and assertions. (Available only in -pre preview versions.)
+
+In `v0.3.9-pre`, this behavior is officially stable. In fact, we do this in a few lines:
+```toml
+[profile.release]
+# Only on `-pre` release
+debug = true            # Preserve Debug Information Table
+debug-assertions = true # Enable Debug Assertions
+```

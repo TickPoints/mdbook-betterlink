@@ -85,3 +85,11 @@ black_list = ["example"]
 **debug 编译(Debug Build)** 是指使用默认配置进行的编译方式，主要用于开发和调试阶段。包含 **调试信息表(Debug Info)** 和 **调试断言(Debug Assert)**。
 
 本项目自`v0.3.7-pre`使用 **带debug的release编译** 来 应用优化等其他内容的情况下使用调试信息表和断言。(仅`-pre`预览版)
+
+在`v0.3.9-pre`，该行为正式稳定。事实上，我们通过几行操作来完成:
+```toml
+[profile.release]
+# Only on `-pre` release
+debug = true            # 保留调试信息表
+debug-assertions = true # 启用调试断言
+```

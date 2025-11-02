@@ -36,7 +36,12 @@ fn test_add_heading_anchors() {
 
 [Title1](#Title1)
 
-[^note1]
+$\text{Mathematical Formula Test} f(x) = ax ^ 2 + bx + c$[^note1]
+
+$$
+\text{Hello}
+\text{World}
+$$
 
 [^脚标测试]
 

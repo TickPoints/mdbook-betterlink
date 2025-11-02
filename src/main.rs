@@ -6,6 +6,9 @@ pub mod command;
 pub mod handler;
 /// About controls on type checking.
 pub mod link_checker;
+/// About test.
+#[cfg(test)]
+mod tests;
 
 use std::process;
 

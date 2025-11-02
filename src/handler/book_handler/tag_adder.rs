@@ -217,6 +217,8 @@ pub fn add_heading_anchors(content: &mut String, check_chinese: bool) {
     }
 
     let mut out = String::new();
-    pulldown_cmark::html::push_html(&mut out, events.into_iter());
-    *content = out;
+    match pulldown_cmark_to_cmark::cmark(events.into_iter(), &mut out) {
+        Ok(_) => *content = out,
+        Err(e) => log::error!("The tag addition failed. Message: {}", e),
+    }
 }

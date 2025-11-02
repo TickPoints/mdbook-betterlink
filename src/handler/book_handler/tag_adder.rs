@@ -18,12 +18,12 @@ pub fn contains_chinese(text: &str) -> bool {
 /// 2. Generating a URL-safe ID (slug) from the text or using `{#id}` syntax
 /// 3. Inserting `<a id="..."></a>` immediately after the closing `</hN>` tag
 pub struct HeadingProcessor {
-    in_code_block: bool,                    // Tracks whether current position is inside a code block
-    current_level: HeadingLevel,            // Current heading level (H1-H6)
-    provided_id: Option<CowStr<'static>>,   // Original ID from `{#id}` syntax
-    heading_text: String,                   // Accumulated plain text of the heading
-    is_in_heading: bool,                    // Whether currently processing a heading
-    seen_ids: HashMap<String, usize>,       // Count of each generated ID to avoid duplicates
+    in_code_block: bool, // Tracks whether current position is inside a code block
+    current_level: HeadingLevel, // Current heading level (H1-H6)
+    provided_id: Option<CowStr<'static>>, // Original ID from `{#id}` syntax
+    heading_text: String, // Accumulated plain text of the heading
+    is_in_heading: bool, // Whether currently processing a heading
+    seen_ids: HashMap<String, usize>, // Count of each generated ID to avoid duplicates
 }
 
 impl HeadingProcessor {
@@ -141,27 +141,25 @@ impl HeadingProcessor {
         check_chinese: bool,
     ) {
         let should_add_id = !check_chinese || contains_chinese(self.heading_text.trim());
-    
+
         let generated_id = if should_add_id && self.provided_id.is_none() {
             Some(self.generate_unique_id())
-        } else if let Some(ref provided) = self.provided_id {
-            Some(provided.clone())
         } else {
-            None
+            self.provided_id.clone()
         };
-    
+
         output.push(Event::End(TagEnd::Heading(level)));
-    
+
         if let Some(id) = generated_id {
             let anchor_html = format!(r#"<a id="{}"></a>"#, id);
             output.push(Event::Html(anchor_html.into()));
         }
-    
+
         self.reset_heading();
     }
 
     /// Generates a URL-safe, unique ID from collected heading text.
-/// Used as the `id` value in inserted `<a id="...">` anchor elements.
+    /// Used as the `id` value in inserted `<a id="...">` anchor elements.
     fn generate_unique_id(&mut self) -> CowStr<'static> {
         let base: String = self
             .heading_text

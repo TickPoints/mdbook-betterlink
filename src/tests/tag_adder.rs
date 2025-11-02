@@ -48,10 +48,11 @@ $$
 [^note1]: 1
 
 [^脚标测试]: 2
-"#.to_string();
+"#
+    .to_string();
     add_heading_anchors(&mut content, false);
     println!("{}", content);
-    assert!(content.contains(r#"<a id="title1">"#));   // Note: the title is converted to lowercase by default
+    assert!(content.contains(r#"<a id="title1">"#)); // Note: the title is converted to lowercase by default
     assert!(content.contains(r#"<a id="title2">"#));
     assert!(content.contains(r#"<a id="subtitle1">"#));
     assert!(content.contains(r#"<a id="subtitle2">"#));

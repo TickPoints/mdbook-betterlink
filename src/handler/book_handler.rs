@@ -2,8 +2,8 @@ use super::config::ProcessorConfig;
 use mdbook::book::{Book, BookItem, Chapter};
 use mdbook::preprocess::PreprocessorContext;
 
-pub mod tag_adder;
 pub mod old_tag_adder;
+pub mod tag_adder;
 
 fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, src: &std::path::Path) {
     if config.use_old_tag_adder {

@@ -10,13 +10,13 @@ pub fn contains_chinese(text: &str) -> bool {
         .any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c) || ('\u{3400}'..='\u{4dbf}').contains(&c))
 }
 
-/// Processor that adds `id` attributes to heading tags (`<h1>`, `<h2>`, etc.)
-/// Only processes headings containing Chinese characters if `check_chinese` is enabled.
+/// Processor that appends anchor tags (`<a id="..."></a>`) after heading elements.
+/// Only generates anchors for headings containing Chinese characters if `check_chinese` is enabled.
 ///
 /// It works by:
-/// 1. Collecting text content within a heading
-/// 2. Generating a URL-safe ID (slug)
-/// 3. Injecting `id="..."` into the opening heading tag
+/// 1. Collecting plain text content within a heading
+/// 2. Generating a URL-safe ID (slug) from the text or using `{#id}` syntax
+/// 3. Inserting `<a id="..."></a>` immediately after the closing `</hN>` tag
 pub struct HeadingProcessor {
     in_code_block: bool,                    // Tracks whether current position is inside a code block
     current_level: HeadingLevel,            // Current heading level (H1-H6)
@@ -133,7 +133,6 @@ impl HeadingProcessor {
         output.push(event);
     }
 
-    /// Finalizes the heading and injects `id` if needed.
     /// Finalizes the heading and injects <a id="..."> after it if needed.
     fn exit_heading(
         &mut self,
@@ -161,7 +160,8 @@ impl HeadingProcessor {
         self.reset_heading();
     }
 
-    /// Generates a URL-safe, unique ID from heading text.
+    /// Generates a URL-safe, unique ID from collected heading text.
+/// Used as the `id` value in inserted `<a id="...">` anchor elements.
     fn generate_unique_id(&mut self) -> CowStr<'static> {
         let base: String = self
             .heading_text
@@ -198,12 +198,14 @@ impl Default for HeadingProcessor {
     }
 }
 
-/// Processes the entire Markdown string and injects heading IDs where appropriate.
+/// Processes the entire Markdown string and appends anchor tags (`<a id="..."></a>`)
+/// after headings to enable deep linking. Does not modify the original heading tags.
+/// Only adds anchors for headings with Chinese characters if `check_chinese` is enabled.
 ///
 /// # Arguments
 ///
-/// * `content` - Mutable reference to the Markdown content (will be overwritten)
-/// * `check_chinese` - If true, only headings with Chinese characters get IDs
+/// * `content` - Mutable reference to the Markdown content (will be overwritten with HTML)
+/// * `check_chinese` - If true, only headings containing Chinese characters will get anchors
 pub fn add_heading_anchors(content: &mut String, check_chinese: bool) {
     let parser = pulldown_cmark::Parser::new(content);
     let mut processor = HeadingProcessor::new();

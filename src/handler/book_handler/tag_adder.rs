@@ -5,7 +5,7 @@ use std::collections::HashMap;
 /// This includes:
 /// - Basic CJK: U+4E00–U+9FFF
 /// - Ext A:   U+3400–U+4DBF
-fn contains_chinese(text: &str) -> bool {
+pub fn contains_chinese(text: &str) -> bool {
     text.chars()
         .any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c) || ('\u{3400}'..='\u{4dbf}').contains(&c))
 }
@@ -18,12 +18,12 @@ fn contains_chinese(text: &str) -> bool {
 /// 2. Generating a URL-safe ID (slug)
 /// 3. Injecting `id="..."` into the opening heading tag
 pub struct HeadingProcessor {
-    in_code_block: bool, // Tracks whether current position is inside a code block
-    current_level: HeadingLevel, // Current heading level (H1-H6)
-    provided_id: Option<CowStr<'static>>, // Original ID from `{#id}` syntax
-    heading_text: String, // Accumulated plain text of the heading
-    is_in_heading: bool, // Whether currently processing a heading
-    seen_ids: HashMap<String, usize>, // Count of each generated ID to avoid duplicates
+    in_code_block: bool,                    // Tracks whether current position is inside a code block
+    current_level: HeadingLevel,            // Current heading level (H1-H6)
+    provided_id: Option<CowStr<'static>>,   // Original ID from `{#id}` syntax
+    heading_text: String,                   // Accumulated plain text of the heading
+    is_in_heading: bool,                    // Whether currently processing a heading
+    seen_ids: HashMap<String, usize>,       // Count of each generated ID to avoid duplicates
 }
 
 impl HeadingProcessor {
@@ -121,12 +121,8 @@ impl HeadingProcessor {
         event: Event<'static>,
     ) {
         match &event {
-            Event::Text(text) => {
+            Event::Text(text) | Event::Code(text) => {
                 self.heading_text.push_str(text);
-            }
-            Event::Code(code) => {
-                self.heading_text.push(' ');
-                self.heading_text.push_str(code);
             }
             Event::Html(html) | Event::InlineHtml(html) => {
                 let plain = html.replace(['<', '>', '&', ';'], " ");
@@ -138,6 +134,7 @@ impl HeadingProcessor {
     }
 
     /// Finalizes the heading and injects `id` if needed.
+    /// Finalizes the heading and injects <a id="..."> after it if needed.
     fn exit_heading(
         &mut self,
         output: &mut Vec<Event<'static>>,
@@ -145,17 +142,22 @@ impl HeadingProcessor {
         check_chinese: bool,
     ) {
         let should_add_id = !check_chinese || contains_chinese(self.heading_text.trim());
-
-        if should_add_id && self.provided_id.is_none() {
-            let generated_id = self.generate_unique_id();
-
-            // Patch the last event: must be `Start(Heading{...})`
-            if let Some(Event::Start(Tag::Heading { attrs, .. })) = output.last_mut() {
-                attrs.push((CowStr::Borrowed("id"), Some(generated_id)));
-            }
-        }
-
+    
+        let generated_id = if should_add_id && self.provided_id.is_none() {
+            Some(self.generate_unique_id())
+        } else if let Some(ref provided) = self.provided_id {
+            Some(provided.clone())
+        } else {
+            None
+        };
+    
         output.push(Event::End(TagEnd::Heading(level)));
+    
+        if let Some(id) = generated_id {
+            let anchor_html = format!(r#"<a id="{}"></a>"#, id);
+            output.push(Event::Html(anchor_html.into()));
+        }
+    
         self.reset_heading();
     }
 
@@ -213,6 +215,6 @@ pub fn add_heading_anchors(content: &mut String, check_chinese: bool) {
     }
 
     let mut out = String::new();
-    let _ = pulldown_cmark_to_cmark::cmark(events.into_iter(), &mut out);
+    pulldown_cmark::html::push_html(&mut out, events.into_iter());
     *content = out;
 }

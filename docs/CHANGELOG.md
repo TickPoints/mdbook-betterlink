@@ -3,6 +3,15 @@
 2. The preview version has a `-pre` suffix.
 3. The preview version comes with a debug feature (after `0.3.7-pre`).
 
+## 0.3.10
+- Added the `debug-assertions` profile
+- Added the `test` system
+- Added `lib.rs` (That is, now interpretable as lib. Thereby providing more document information.)
+
+### Warnings
+- `0.3.9-pre` was removed
+- There is still a lot of instability in the current version, but my focus needs to be shifted for a while. Because I need to wait for some dependencies to be fixed.
+
 ## 0.3.8-pre
 - Added `old_tag_adder` to use the old `add_a_tag` function
 - Added the `use_old_tag_adder` config to use the old `add_a_tag` function

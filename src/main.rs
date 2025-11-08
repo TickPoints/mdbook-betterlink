@@ -1,14 +1,11 @@
 /// About some constants and type definitions related to constants.
-pub mod attributes;
+mod attributes;
 /// About the command definition.
-pub mod command;
+mod command;
 /// About preprocessor control.
-pub mod handler;
+mod handler;
 /// About controls on type checking.
-pub mod link_checker;
-/// About test.
-#[cfg(test)]
-mod tests;
+mod link_checker;
 
 use std::process;
 

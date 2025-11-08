@@ -1,4 +1,4 @@
-use crate::handler::book_handler::tag_adder;
+use mdbook_betterlink::handler::book_handler::tag_adder;
 
 #[test]
 fn test_contains_chinese() {
@@ -61,4 +61,45 @@ $$
     assert!(content.contains(r#"<a id="sametitle">"#));
     assert!(content.contains(r#"<a id="sametitle-1">"#));
     assert!(!content.contains(r#"<a id="代码框内标题">"#));
+}
+
+#[test]
+fn test_pulldown_cmark_to_cmark() {
+    let content = r#"
+# Test
+This is a simple test. The content includes FOOTNOTES [^note1], GFM and MATH.
+
+## Math
+[^note1] [^note2]
+```tex
+$
+\text {Hello}   \\
+\text {World}
+$
+```
+
+$
+\text {Hello}   \\
+\text {World}
+$
+
+## GFM
+> Example [note3]
+
+> [!WARNING]
+> EXAMPLE2 [note4]
+
+[^note1]: Like this.
+
+[^note2]: ..
+
+[^note3]: ..
+
+[^note4]: ..
+"#
+    .to_string();
+    let parser = pulldown_cmark::Parser::new(&content);
+    let mut out = String::new();
+    pulldown_cmark_to_cmark::cmark(parser, &mut out).unwrap();
+    panic!("{out}");
 }

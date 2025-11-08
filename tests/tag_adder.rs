@@ -65,7 +65,7 @@ $$
 
 // #[test]
 // fn test_pulldown_cmark_to_cmark() {
-    // let content = r#"
+// let content = r#"
 // # Test
 // This is a simple test. The content includes FOOTNOTES [^note1], GFM and MATH.
 
@@ -97,9 +97,9 @@ $$
 
 // [^note4]: ..
 // "#
-    // .to_string();
-    // let parser = pulldown_cmark::Parser::new(&content);
-    // let mut out = String::new();
-    // pulldown_cmark_to_cmark::cmark(parser, &mut out).unwrap();
-    // eprintln!("{out}");
+// .to_string();
+// let parser = pulldown_cmark::Parser::new(&content);
+// let mut out = String::new();
+// pulldown_cmark_to_cmark::cmark(parser, &mut out).unwrap();
+// eprintln!("{out}");
 // }

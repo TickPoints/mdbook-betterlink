@@ -93,3 +93,11 @@ black_list = ["example"]
 debug = true            # 保留调试信息表
 debug-assertions = true # 启用调试断言
 ```
+
+## 自动生成文档
+Docs.rs已经生成了一些文档可供使用，得益于本项目大量的文档注释。尽管它是一个bin项目，你也可以从中快速了解它的功能: <https://docs.rs/mdbook-betterlink/latest/mdbook_betterlink/>
+
+## 开发须知
+- 一般情况下遵循通用的社区开发原则即可
+- 尽量的多给一些测试，以帮助研究行为
+- PR前注意`cargo clippy`

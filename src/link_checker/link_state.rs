@@ -31,10 +31,6 @@ impl<'a> LinkState<'a> {
         }
     }
 
-    pub fn url(&self) -> &CowStr<'a> {
-        &self.url
-    }
-
     pub fn start_link(&mut self, url: CowStr<'a>, link_type: LinkType) {
         self.active = true;
         self.url = url;

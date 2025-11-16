@@ -10,6 +10,7 @@
 ### Warnings
 - The crate will not be actively maintained in the future.
 - `0.4.0` was removed (and yanked)
+- **Breaking change**: The configuration option `display_processed_contexts` has been renamed to the correct `display_processed_contents`.
 
 ## 0.3.10
 - Added the `debug-assertions` profile

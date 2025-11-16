@@ -205,7 +205,7 @@ impl Default for HeadingProcessor {
 /// * `content` - Mutable reference to the Markdown content (will be overwritten with HTML)
 /// * `check_chinese` - If true, only headings containing Chinese characters will get anchors
 pub fn add_heading_anchors(content: &mut String, check_chinese: bool) {
-    let parser = pulldown_cmark::Parser::new_ext(context, crate::attributes::DEFAULT_PARSER_OPTIONS);
+    let parser = pulldown_cmark::Parser::new_ext(content, crate::attributes::DEFAULT_PARSER_OPTIONS);
     let mut processor = HeadingProcessor::new();
     let mut events = Vec::new();
 

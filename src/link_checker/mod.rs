@@ -20,7 +20,7 @@ pub fn format_range(range: &std::ops::Range<usize>) -> String {
 /// Checks markdown content for invalid links.
 ///
 /// # Arguments
-/// * `context` - The markdown content to check
+/// * `content` - The markdown content to check
 /// * `path` - Optional path to the markdown file (used for relative path resolution)
 /// * `root` - Root directory that all links must be contained within (It's the `src/` of the current book)
 /// * `conf` - Configuration for link checking
@@ -28,14 +28,14 @@ pub fn format_range(range: &std::ops::Range<usize>) -> String {
 /// # Notes
 /// - Returns early if path is None
 /// - Logs issues according to the configured prompt_level
-pub fn check_link(context: &str, path: &Option<PathBuf>, root: &Path, conf: &LinkCheckerConfig) {
+pub fn check_link(content: &str, path: &Option<PathBuf>, root: &Path, conf: &LinkCheckerConfig) {
     // Early return if path is None to avoid unnecessary processing
     let Some(file_path) = path else {
         return;
     };
 
     let events =
-        pulldown_cmark::Parser::new_ext(context, crate::attributes::DEFAULT_PARSER_OPTIONS);
+        pulldown_cmark::Parser::new_ext(content, crate::attributes::DEFAULT_PARSER_OPTIONS);
     let mut link_state = LinkState::new();
 
     for (event, range) in events.into_offset_iter() {

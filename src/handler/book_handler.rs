@@ -11,8 +11,8 @@ fn chapter_handle(chapter: &mut Chapter, config: &ProcessorConfig, src: &std::pa
     } else {
         tag_adder::add_heading_anchors(&mut chapter.content, config.add_link_for_chinese);
     }
-    if config.display_processed_contexts {
-        log::debug!("new context: {0}", chapter.content);
+    if config.display_processed_contents {
+        log::debug!("new content: {0}", chapter.content);
     }
     if config.do_link_check {
         crate::link_checker::check_link(

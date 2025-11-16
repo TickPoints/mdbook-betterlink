@@ -1,9 +1,9 @@
-pub fn add_a_tag(context: &mut String, check_language: bool) {
+pub fn add_a_tag(content: &mut String, check_language: bool) {
     let mut in_code_block = false;
     let mut new_content = String::new();
     let mut id_counter = 0;
 
-    for line in context.lines() {
+    for line in content.lines() {
         // Handling Code Block Markers
         if line.starts_with("```") || line.starts_with("~~~") {
             in_code_block = !in_code_block;
@@ -74,5 +74,5 @@ pub fn add_a_tag(context: &mut String, check_language: bool) {
         new_content.push('\n');
     }
 
-    *context = new_content;
+    *content = new_content;
 }

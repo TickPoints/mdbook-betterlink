@@ -3,11 +3,13 @@
 2. The preview version has a `-pre` suffix.
 3. The preview version comes with a debug feature (after `0.3.7-pre`).
 
-## 0.4.0
+## 0.4.1
 - Fixed a configuration problem that had been bothering me for a long time
+- Fixed the misspelling of `context`
 
 ### Warnings
-- The crate will not be actively maintained in the future. I will shift my focus to another project. If you need anything, I'm sorry.
+- The crate will not be actively maintained in the future.
+- `0.4.0` was removed (and yanked)
 
 ## 0.3.10
 - Added the `debug-assertions` profile

@@ -18,7 +18,7 @@ add_link_for_chinese = false
 ## Set true to display processed content (output after each article)
 ## Default: true
 ## **Special**: Only effective in Debug mode compilations
-display_processed_contexts = true
+display_processed_contents = true
 
 ## Set true to enable link checking during preprocessing
 ## Default: true

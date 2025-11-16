@@ -17,7 +17,7 @@ add_link_for_chinese = false
 ## 设为true以显示处理过后的内容(在每一篇文章处理完后输出一次)
 ## 默认: true
 ## **特殊**: 只有在Debug模式下编译的文件才有用
-display_processed_contexts = true
+display_processed_contents = true
 
 ## 设为true以在预处理时做链接检查
 ## 默认: true

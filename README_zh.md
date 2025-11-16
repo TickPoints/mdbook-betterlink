@@ -8,6 +8,9 @@
 [**English**](https://github.com/TickPoints/mdbook-betterlink/blob/main/README.md)
 **中文**
 
+> [!WARNING]
+> 该仓库现已不再积极更新。
+
 **BetterLink** 用来为 [MDBOOK](https://github.com/rust-lang/mdBook) 提供更好的超链接效果。
 
 ## Why

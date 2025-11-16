@@ -8,6 +8,9 @@
 **English**
 [**中文**](https://github.com/TickPoints/mdbook-betterlink/blob/main/README_zh.md)
 
+> [!WARNING]
+> The crate is no longer actively updated.
+
 BetterLink is designed to provide better hyperlink effects for MDBOOK.
 
 ## Why
